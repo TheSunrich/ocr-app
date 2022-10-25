@@ -1,0 +1,58 @@
+$text-color: white ;
+$text-color-alt: #525252;
+
+$default-color: white;
+$success-color: #74c98c;
+$info-color: #90A4AE;
+$warning-color: #FFCA28;
+$error-color: #f85f51;
+
+.Vue-Toastification__toast {
+  &.custom-toast {
+    padding: 0.75em 1em;
+  }
+}
+
+.Vue-Toastification__toast--default {
+  &.custom-toast {
+    background-color: white;
+    color: $text-color-alt;
+
+    .Vue-Toastification__toast-component-body {
+      hr {
+        border-color: $text-color-alt;
+        border-style: solid;
+        background-color: $text-color-alt;
+        border-width: 0.25px;
+      }
+    }
+
+    .Vue-Toastification__close-button {
+      color: $text-color-alt;
+    }
+  }
+}
+
+.Vue-Toastification__toast--success {
+  &.custom-toast {
+    background-color: $success-color;
+  }
+}
+
+.Vue-Toastification__toast--info {
+  &.custom-toast {
+    background-color: $info-color;
+  }
+}
+
+.Vue-Toastification__toast--warning {
+  &.custom-toast {
+    background-color: $warning-color;
+  }
+}
+
+.Vue-Toastification__toast--error {
+  &.custom-toast {
+    background-color: $error-color;
+  }
+}
