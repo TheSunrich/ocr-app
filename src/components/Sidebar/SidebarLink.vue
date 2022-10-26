@@ -9,7 +9,7 @@
   </router-link>
 </template>
 
-<script type="ts">
+<script lang="ts">
 
 import {defineComponent} from "vue";
 
@@ -21,10 +21,10 @@ export default defineComponent({
     name: {type: String, required: true},
   },
   computed: {
-    isCollapsed() {
+    isCollapsed(): boolean {
       return this.$store.state.collapsed;
     },
-    isActive() {
+    isActive(): boolean {
       return this.$route.path === this.to;
     }
   },

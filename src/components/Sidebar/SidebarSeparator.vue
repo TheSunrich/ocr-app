@@ -7,19 +7,21 @@
   </transition>
 </template>
 
-<script type="ts">
+<script lang="ts">
 
-export default {
+import {defineComponent} from "vue";
+
+export default defineComponent({
   name: "SidebarSeparator",
   props: {
     text: {type: String, required: true},
   },
   computed: {
-    isCollapsed() {
+    isCollapsed(): boolean {
       return this.$store.state.collapsed;
     }
   },
-}
+})
 </script>
 
 <style lang="scss">

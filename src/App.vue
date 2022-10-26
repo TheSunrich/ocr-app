@@ -8,20 +8,20 @@
   </div>
 </template>
 
-<script type="ts">
-import Sidebar from "@/components/Sidebar/Sidebar";
-import Navbar from "@/components/Navbar/Navbar";
-import Toast from "@/components/Toast/Toast";
+<script lang="ts">
+import Sidebar from "@/components/Sidebar/Sidebar.vue";
+import Navbar from "@/components/Navbar/Navbar.vue";
+import Toast from "@/components/Toast/Toast.vue";
 import {emitter} from "@/main";
-import Vue from "vue";
+import Vue, {defineComponent} from "vue";
 
 const SIDEBAR_WIDTH = 220;
 const SIDEBAR_WIDTH_COLLAPSED = 70;
 
-export default Vue.extend({
+export default defineComponent({
   components: {Navbar, Sidebar},
   mounted() {
-    emitter.on('show-toast', (args) => {
+    emitter.on('show-toast', (args: any) => {
       this.$toast({
         component: Toast,
         props: {
@@ -35,17 +35,12 @@ export default Vue.extend({
         toastClassName: "custom-toast",
       });
     });
-    emitter.emit('show-toast', {
-      title: 'Prueba',
-      description: 'Esta es una prueba del toast',
-      type: 'success'
-    });
   },
   computed: {
-    isCollapsed() {
+    isCollapsed(): boolean {
       return this.$store.state.collapsed;
     },
-    getSidebarWidth() {
+    getSidebarWidth(): string {
       if (this.$route.path.substring(this.$route.path.length - 6) === '/login') {
         return '0';
       }
@@ -66,7 +61,7 @@ html{
 }
 
 body {
-  background-color: #F1F0EF;
+  background-color: #eef5ee !important;
 }
 
 #app {
@@ -75,6 +70,16 @@ body {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
+}
+
+a {
+  color: #2c3e50;
+  text-decoration: none;
+}
+
+a:hover {
+  color: #2c3e50;
+  text-decoration: none;
 }
 
 nav {

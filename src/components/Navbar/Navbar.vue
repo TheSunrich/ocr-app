@@ -2,7 +2,7 @@
   <b-container fluid class="p-3">
     <b-row no-gutters>
       <b-col md="11" class="text-start">
-        <h1 class="welcome-text">Bienvenido <span>Usuario</span></h1>
+        <h1 class="welcome-text">Bienvenido <span>Usuario Invitado</span></h1>
       </b-col>
       <b-col md="1" class="text-end">
         <b-avatar
@@ -13,7 +13,7 @@
   </b-container>
 </template>
 
-<script type="ts">
+<script lang="ts">
 import {defineComponent} from "vue";
 
 export default defineComponent({
