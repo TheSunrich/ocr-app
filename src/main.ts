@@ -20,7 +20,8 @@ import {
     faPaperPlane, faTrash, faSearch, faLock,
     faLockOpen, faCalendarXmark, faCircleCheck, faClose,
     faArrowRightToBracket, faArrowRightFromBracket, faFileCircleCheck, faFileCircleExclamation,
-    faPlay, faChartColumn, faComputer, faPeopleLine
+    faPlay, faChartColumn, faComputer, faPeopleLine,
+    faCodeBranch, faFolder, faFolderTree, faFolderOpen, faUsers
 } from '@fortawesome/free-solid-svg-icons'
 import {faBuilding} from '@fortawesome/free-regular-svg-icons'
 
@@ -51,10 +52,15 @@ library.add(
     faPlay,
     faChartColumn,
     faComputer,
-    faPeopleLine
+    faPeopleLine,
+    faCodeBranch,
+    faFolder,
+    faFolderTree,
+    faFolderOpen,
+    faUsers
 )
 
-axios.defaults.baseURL = ""
+axios.defaults.baseURL = "http://localhost:8000/"
 
 Vue.use(VueAxios, axios)
 

@@ -10,24 +10,11 @@
       </transition>
     </div>
 
-    <SidebarLink name="Dashboard" to="/" icon="fa-solid fa-border-all"/>
-    <SidebarLink name="Empresas" to="/companies" icon="fa-regular fa-building"/>
-    <SidebarLink name="Empresa" to="/company" icon="fa-regular fa-building"/>
+    <SidebarLink name="Sucursales" to="/" icon="fa-solid fa-code-branch"/>
+    <SidebarLink name="Usuarios" to="/user" icon="fa-solid fa-users"/>
+    <SidebarLink name="Carpetas" to="/folder" icon="fa-solid fa-folder"/>
 
     <SidebarSeparator text="Encuestas"/>
-    <SidebarLink name="Encuestas de la empresa" to="/company/poll" icon="fa-solid fa-file-circle-exclamation"/>
-
-    <SidebarSeparator text="Modificación de encuesta"/>
-    <SidebarLink name="Encuestas" to="/polls" icon="fa-solid fa-list-check"/>
-    <SidebarLink name="Secciones" to="/sections" icon="fa-solid fa-section"/>
-
-    <SidebarSeparator text="Reportes"/>
-    <SidebarLink name="Reportes" to="/reports" icon="fa-solid fa-file-lines"/>
-    <SidebarLink name="Gráficas" to="/graphs" icon="fa-solid fa-chart-column"/>
-
-    <SidebarSeparator text="Configuración"/>
-    <SidebarLink name="Datos de Cálculo" icon="fa-solid fa-computer" to="/calc"/>
-    <SidebarLink name="Tipos de Empleado" icon="fa-solid fa-people-line" to="/employee_types"/>
 
   </div>
 </template>
