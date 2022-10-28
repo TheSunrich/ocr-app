@@ -10,7 +10,7 @@
       </transition>
     </div>
 
-    <SidebarLink name="Sucursales" to="/" icon="fa-solid fa-code-branch"/>
+    <SidebarLink name="Sucursales" to="/branch" icon="fa-solid fa-code-branch"/>
     <SidebarLink name="Usuarios" to="/user" icon="fa-solid fa-users"/>
     <SidebarLink name="Carpetas" to="/folder" icon="fa-solid fa-folder"/>
 

@@ -3,7 +3,9 @@
     <Sidebar/>
     <div class="app_container" :style="{marginLeft: getSidebarWidth}">
       <Navbar/>
-      <router-view/>
+      <transition name="fade" mode="out-in">
+        <router-view/>
+      </transition>
     </div>
   </div>
 </template>
@@ -47,16 +49,24 @@ export default defineComponent({
       return `${this.isCollapsed ? SIDEBAR_WIDTH_COLLAPSED : SIDEBAR_WIDTH}px`;
     },
   },
-  methods: {
-
-  }
+  methods: {}
 })
 </script>
 
 <style lang="scss">
 @import './assets/scss/toast';
 
-html{
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.2s ease-out;
+}
+
+html {
   overflow-y: auto !important;
 }
 

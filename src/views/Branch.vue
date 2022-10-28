@@ -13,12 +13,14 @@
         <b-button block variant="primary" pill>Buscar</b-button>
       </b-col>
       <b-col cols="1" class="d-grid">
-        <b-button block variant="primary" pill><font-awesome-icon icon="fa-solid fa-plus"/></b-button>
+        <b-button block variant="primary" pill>
+          <font-awesome-icon icon="fa-solid fa-plus"/>
+        </b-button>
       </b-col>
     </b-row>
-    <b-row>
+    <TransitionGroup name="list" tag="div" class="row" mode="out-in">
       <BranchComponent v-for="branch of branches" :key="branch.id" :branch="branch"/>
-    </b-row>
+    </TransitionGroup>
   </b-container>
 </template>
 
@@ -26,6 +28,7 @@
 import {defineComponent} from "vue";
 import BranchComponent from "@/components/Branch/Branch.vue";
 import {emitter} from "@/main";
+import Branch from "@/models/branch";
 
 export default defineComponent({
   name: "Branch",
@@ -35,12 +38,14 @@ export default defineComponent({
   data() {
     return {
       search: '',
-      branches: [],
+      branches: [] as Branch[],
     }
   },
-  mounted() {
+  created() {
     this.getAll();
-    emitter.on('branch-getall', this.getAll);
+  },
+  mounted() {
+    emitter.on('branch-getAll', this.getAll);
   },
   methods: {
     getAll() {
@@ -59,13 +64,46 @@ export default defineComponent({
       }).catch(error => {
         console.log(error);
       })
-    }
+    },
+    add() {
+
+    },
   }
 })
 </script>
 
 
 <style scoped lang="scss">
+
+.list-move,
+.list-enter-active,
+.list-leave-active {
+  transition: all 0.5s ease-in-out;
+
+  & > .btn-branch {
+    transition: all 0.5s ease-in-out;
+  }
+}
+
+.list-enter{
+  opacity: 0;
+  & > .btn-branch {
+    opacity: 0;
+  }
+}
+
+.list-leave-to {
+  opacity: 0;
+  transform: translateX(30px);
+}
+
+.list-leave-active {
+  position: absolute;
+  top: 0;
+  transform: translateX(200%);
+}
+
+
 
 .form-control {
   border-radius: 100rem;

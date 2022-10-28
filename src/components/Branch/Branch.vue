@@ -13,7 +13,7 @@
       <a class="btn-action btn-delete" @click="deleteBranch">
         <font-awesome-icon icon="fa-solid fa-trash" size="sm"/>
       </a>
-      <blockquote class="card-blockquote" @click="detail">
+      <blockquote class="card-blockquote" @click="showFolders">
         <font-awesome-icon class="btn-icon m-4" icon="fa-solid fa-code-branch" size="4x"/>
         <h2>{{ branch.name }}</h2>
       </blockquote>
@@ -32,8 +32,8 @@ export default defineComponent({
     branch: {type: Object as PropType<Branch>, required: true}
   },
   methods: {
-    detail() {
-      console.log('prueba')
+    showFolders() {
+      this.$router.push({name: 'BranchFolder', params: {branch: JSON.stringify(this.branch)}})
     },
     updateBranch() {
       //this.axios.put(`branch/${this.branch.id}`).then().catch()
@@ -52,7 +52,7 @@ export default defineComponent({
           }
         }
         emitter.emit('show-toast', toastArgs);
-        emitter.emit('branch-getall');
+        emitter.emit('branch-getAll');
       }).catch(error => {
         if (error.response.data.hasOwnProperty('error')) {
           switch (error.response.data.error.code) {
@@ -111,7 +111,7 @@ export default defineComponent({
           }
         }
         emitter.emit('show-toast', toastArgs);
-        emitter.emit('branch-getall');
+        emitter.emit('branch-getAll');
       }).catch(error => {
         if (error.response.data.hasOwnProperty('error')) {
           switch (error.response.data.error.code) {
@@ -162,7 +162,7 @@ export default defineComponent({
       this.axios.patch(`branch/${this.branch.id}/delete`).then(response => {
         if (response.data.hasOwnProperty('error')) {
           return;
-        } else if (response.data.hasOwnProperty('success')){
+        } else if (response.data.hasOwnProperty('success')) {
           toastArgs = {
             title: title,
             description: 'La sucursal se ha eliminado correctamente',
@@ -170,7 +170,7 @@ export default defineComponent({
           }
         }
         emitter.emit('show-toast', toastArgs);
-        emitter.emit('branch-getall');
+        emitter.emit('branch-getAll');
       }).catch(error => {
         if (error.response.data.hasOwnProperty('error')) {
           switch (error.response.data.error.code) {
@@ -208,7 +208,8 @@ export default defineComponent({
         }
       })
     },
-  }
+  },
+
 })
 </script>
 
@@ -221,6 +222,10 @@ export default defineComponent({
 .btn-branch {
   border: none;
   transition: background-color ease-in-out 0.15s;
+
+  &:has(.list-enter-to){
+    opacity: 0;
+  }
 
   &:hover {
     background-color: rgba(44, 62, 80, 0.15);
