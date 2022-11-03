@@ -2,6 +2,8 @@ import Vue from 'vue'
 import VueRouter, {RouteConfig} from 'vue-router'
 import Branch from "@/views/Branch.vue";
 import Folder from "@/views/Folder.vue";
+import File from "@/views/File.vue";
+import FileDetail from "@/views/FileDetail.vue";
 
 Vue.use(VueRouter)
 
@@ -24,6 +26,28 @@ const routes: Array<RouteConfig> = [
         name: 'Folder',
         component: Folder,
 
+    },
+    {
+        path: '/folder/file',
+        name: 'FolderFiles',
+        component: File,
+        props: (route) => ({
+            branch: route.params.branch === undefined ? undefined : JSON.parse(route.params.branch),
+            folder: route.params.folder === undefined ? undefined : String(route.params.folder),
+            deleted: false,
+            preRoute: route.params.preRoute === undefined ? undefined : String(route.params.preRoute)
+        })
+    },
+    {
+        path: '/file',
+        name: 'File',
+        component: FileDetail,
+        props: (route) => ({
+            branch: route.params.branch === undefined ? undefined : JSON.parse(route.params.branch),
+            code: route.params.code === undefined ? undefined : String(route.params.code),
+            file_name: route.params.file_name === undefined ? undefined : String(route.params.file_name),
+            preRoute: route.params.preRoute === undefined ? undefined : String(route.params.preRoute)
+        })
     },
 ]
 
