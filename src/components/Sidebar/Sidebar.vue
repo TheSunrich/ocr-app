@@ -11,10 +11,9 @@
     </div>
 
     <SidebarLink name="Sucursales" to="/branch" icon="fa-solid fa-code-branch"/>
-    <SidebarLink name="Usuarios" to="/user" icon="fa-solid fa-users"/>
     <SidebarLink name="Carpetas" to="/folder" icon="fa-solid fa-folder"/>
+    <SidebarLink name="Usuarios" to="/user" icon="fa-solid fa-users" :is-disabled="true"/>
 
-    <SidebarSeparator text="Encuestas"/>
 
   </div>
 </template>
@@ -61,7 +60,6 @@ export default defineComponent({
 </script>
 
 
-<!--suppress CssInvalidAtRule -->
 <style lang="scss">
 
 $sidebar-bg-color: #007336;

@@ -1,5 +1,5 @@
 <template>
-  <router-link :to="to" class="link" :class="{ active: isActive }">
+  <router-link :is="isDisabled ? 'span' : 'router-link'" :to="to" class="link" :class="{ active: isActive, disabled: isDisabled }">
     <font-awesome-icon class="icon" :icon="icon"/>
     <transition name="fade">
       <span v-if="!isCollapsed">
@@ -19,6 +19,7 @@ export default defineComponent({
     to: {type: String, required: true},
     icon: {type: String, required: true},
     name: {type: String, required: true},
+    isDisabled: {type: Boolean, default: false}
   },
   computed: {
     isCollapsed(): boolean {
@@ -43,12 +44,17 @@ $icon-size: 1.15em;
   &.sidebar-expanded {
     .link {
       color: $text-color;
+      border-radius: 0 100px 100px 0;
 
       &:hover, &.active {
         color: $text-color-exp;
         background: $sidebar-item;
         border-left: 0 solid white;
-        border-radius: 0 100px 100px 0;
+      }
+
+      &.disabled:hover, &.disabled {
+        background: #89c498;
+        color: white;
       }
 
       .icon {
@@ -61,19 +67,18 @@ $icon-size: 1.15em;
   &:not(.sidebar-expanded) {
     .link {
       color: $text-color-exp;
+      border-radius: 0 100px 100px 0;
 
       &:hover {
         color: $text-color-exp;
         background: transparent;
         border-left: 4px solid white;
-        border-radius: 0 100px 100px 0;
       }
 
       &.active {
         color: $text-color-exp;
         background: transparent;
         border-left: 4px solid white;
-        border-radius: 0 100px 100px 0;
       }
 
       .icon {

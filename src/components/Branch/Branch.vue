@@ -239,6 +239,10 @@ export default defineComponent({
     background-color: #FFF;
   }
 
+  &:has(> .btn-unlock:hover) {
+    background-color: #FFF;
+  }
+
   &:has(> .btn-delete:hover) {
     background-color: #FFF;
   }
@@ -249,27 +253,29 @@ export default defineComponent({
 
 
   .btn-action {
-    transition: background-color ease-in-out 0.25s, color ease-in-out 0.25s, top ease-in-out 0.25s, right ease-in-out 0.25s, width ease-in-out 0.25s, height ease-in-out 0.25s;
+    transition: background-color ease-in-out 0.25s, color ease-in-out 0.25s, transform ease-in-out 0.05s;
     display: flex;
     position: absolute;
     justify-content: center;
     align-items: center;
     border-radius: 100rem;
+    width: 26px;
+    height: 26px;
+    right: 9px;
 
     &.btn-update {
       top: #{top_space(1)}px;
-      right: 9px;
-      width: 26px;
-      height: 26px;
       background-color: white;
       color: #2747bb;
 
       &:hover {
-        top: #{top_space(1) - 1}px;
-        right: 8px;
-        width: 28px;
-        height: 28px;
         background-color: #2747bb;
+        color: white;
+      }
+
+      &:active {
+        transform: scale(105%, 105%);
+        background-color: #243a77;
         color: white;
       }
 
@@ -281,18 +287,17 @@ export default defineComponent({
 
     &.btn-lock {
       top: #{top_space(2)}px;
-      right: 9px;
-      width: 26px;
-      height: 26px;
       background-color: white;
       color: #ce7d2b;
 
       &:hover {
-        top: #{top_space(2) - 1}px;
-        right: 8px;
-        width: 28px;
-        height: 28px;
         background-color: #ce7d2b;
+        color: white;
+      }
+
+      &:active {
+        transform: scale(105%, 105%);
+        background-color: #8d6228;
         color: white;
       }
 
@@ -304,18 +309,17 @@ export default defineComponent({
 
     &.btn-unlock {
       top: #{top_space(2)}px;
-      right: 9px;
-      width: 26px;
-      height: 26px;
       background-color: white;
       color: #36ce2b;
 
       &:hover {
-        top: #{top_space(2) - 1}px;
-        right: 8px;
-        width: 28px;
-        height: 28px;
         background-color: #36ce2b;
+        color: white;
+      }
+
+      &:active {
+        transform: scale(105%, 105%);
+        background-color: #2f9827;
         color: white;
       }
 
@@ -328,18 +332,17 @@ export default defineComponent({
 
     &.btn-delete {
       top: #{top_space(3)}px;
-      right: 9px;
-      width: 26px;
-      height: 26px;
       background-color: white;
       color: #ce2b2b;
 
       &:hover {
-        top: #{top_space(3) - 1}px;
-        right: 8px;
-        width: 28px;
-        height: 28px;
         background-color: #ce2b2b;
+        color: white;
+      }
+
+      &:active {
+        transform: scale(105%, 105%);
+        background-color: #962525;
         color: white;
       }
 

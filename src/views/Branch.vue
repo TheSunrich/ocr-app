@@ -85,16 +85,13 @@ export default defineComponent({
   }
 }
 
-.list-enter{
+.list-enter,
+.list-leave-to {
   opacity: 0;
+
   & > .btn-branch {
     opacity: 0;
   }
-}
-
-.list-leave-to {
-  opacity: 0;
-  transform: translateX(30px);
 }
 
 .list-leave-active {
@@ -102,8 +99,6 @@ export default defineComponent({
   top: 0;
   transform: translateX(200%);
 }
-
-
 
 .form-control {
   border-radius: 100rem;
