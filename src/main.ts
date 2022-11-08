@@ -1,3 +1,7 @@
+import "vue-toastification/dist/index.css";
+import 'bootstrap/dist/css/bootstrap.css'
+import 'bootstrap-vue/dist/bootstrap-vue.css'
+
 import Vue from 'vue'
 import App from './App.vue'
 import router from './router'
@@ -10,9 +14,6 @@ import VueAxios from "vue-axios";
 import {library} from "@fortawesome/fontawesome-svg-core";
 import {FontAwesomeIcon} from '@fortawesome/vue-fontawesome'
 
-import "vue-toastification/dist/index.css";
-import 'bootstrap/dist/css/bootstrap.css'
-import 'bootstrap-vue/dist/bootstrap-vue.css'
 
 import {
     faBars, faPencil, faBorderAll, faListCheck,
@@ -21,9 +22,11 @@ import {
     faLockOpen, faCalendarXmark, faCircleCheck, faClose,
     faArrowRightToBracket, faArrowRightFromBracket, faFileCircleCheck, faFileCircleExclamation,
     faPlay, faChartColumn, faComputer, faPeopleLine,
-    faCodeBranch, faFolder, faFolderTree, faFolderOpen, faUsers
+    faCodeBranch, faFolder, faFolderTree, faFolderOpen, faUsers, faShareAlt,
+    faShare, faShareNodes, faLink, faMagnifyingGlassMinus, faMagnifyingGlassPlus,
+    faArrowRotateLeft,
 } from '@fortawesome/free-solid-svg-icons'
-import {faBuilding} from '@fortawesome/free-regular-svg-icons'
+import {faBuilding, faFilePdf} from '@fortawesome/free-regular-svg-icons'
 
 export const emitter = mitt()
 
@@ -57,7 +60,15 @@ library.add(
     faFolder,
     faFolderTree,
     faFolderOpen,
-    faUsers
+    faUsers,
+    faShareAlt,
+    faShare,
+    faShareNodes,
+    faLink,
+    faMagnifyingGlassMinus,
+    faMagnifyingGlassPlus,
+    faFilePdf,
+    faArrowRotateLeft
 )
 
 axios.defaults.baseURL = "http://localhost:8000/"

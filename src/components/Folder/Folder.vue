@@ -13,8 +13,9 @@
       <a class="btn-action btn-delete" @click="deleteFolder" v-if="!deleted">
         <font-awesome-icon icon="fa-solid fa-trash" size="sm"/>
       </a>
-      <b-form-checkbox v-model="status" class="folder-checkbox"/>
-      <blockquote class="card-blockquote" @click="deleted ? showDeletedFiles() : showFiles()">
+      <b-form-checkbox v-model="checked" class="folder-checkbox" v-if="$store.state.isShareActive"
+                       @change="toggleShareList"/>
+      <blockquote class="card-blockquote" @click="whenActivate">
         <font-awesome-icon class="btn-icon m-4" icon="fa-solid fa-folder" size="4x"/>
         <h2>{{ folder.name }}</h2>
         <h3 v-if="$route.name === 'Folder'">{{ folder.branch.name }}</h3>
@@ -33,16 +34,33 @@ export default defineComponent({
   props: {
     folder: {type: Object as PropType<Folder>, required: true},
     deleted: {type: Boolean, default: false},
-    index: {type: Number, required: true}
   },
-  data(){
-    return{
-      status: false,
+  data() {
+    return {
+      checked: false,
+    }
+  },
+  mounted() {
+    if (this.$store.state.shareList.find((folder: Folder) => folder.name === this.folder.name && folder.idBranch === this.folder.idBranch)) {
+      this.checked = true;
     }
   },
   methods: {
+    whenActivate() {
+      if (this.$store.state.isShareActive) {
+        this.checked = !this.checked;
+        this.toggleShareList();
+        return;
+      }
+      if (this.deleted) {
+        this.showDeletedFiles()
+        return;
+      }
+      this.showFiles();
+    },
     showFiles() {
-      this.$router.push({name: 'FolderFiles',
+      this.$router.push({
+        name: 'FolderFiles',
         params: {
           branch: JSON.stringify(this.folder.branch),
           folder: String(this.folder.name),
@@ -227,11 +245,13 @@ export default defineComponent({
         }
       })
     },
-    addToShare(){
-      
-    },
-    removeFromShare(){
-      
+    toggleShareList() {
+      if (this.checked)
+        this.$store.commit('addToShareList', this.folder);
+      else {
+        let selectedFolder: Folder = this.$store.state.shareList.find((folder: Folder) => folder.name === this.folder.name && folder.idBranch === this.folder.idBranch);
+        this.$store.commit('deleteFolderInShareList', this.$store.state.shareList.indexOf(selectedFolder));
+      }
     },
 
   }
@@ -239,6 +259,12 @@ export default defineComponent({
 </script>
 
 <style scoped lang="scss">
+@use 'sass:color';
+
+$custom-orange: #fd7e14;
+$custom-green: #36ce2b;
+$custom-blue: #2747bb;
+$custom-red: #ce2b2b;
 
 @function top_space($btn_num) {
   @return 33 * $btn_num - 24;
@@ -252,7 +278,7 @@ export default defineComponent({
     background-color: rgba(44, 62, 80, 0.15);
   }
 
-  &:has(> .folder-checkbox:hover) {
+  &:has(> .folder-checkbox), &:active:has(> .folder-checkbox) {
     background-color: #FFF;
   }
 
@@ -276,9 +302,9 @@ export default defineComponent({
     background-color: rgba(44, 62, 80, 0.45);
   }
 
-  .folder-checkbox{
+  .folder-checkbox {
     position: absolute;
-    transform: translate(10px, 10px);
+    transform: translate(10px, 6px);
   }
 
   .btn-action {
@@ -295,16 +321,16 @@ export default defineComponent({
     &.btn-update {
       top: #{top_space(1)}px;
       background-color: white;
-      color: #2747bb;
+      color: $custom-blue;
 
       &:hover {
-        background-color: #2747bb;
+        background-color: $custom-blue;
         color: white;
       }
 
       &:active {
         transform: scale(105%, 105%);
-        background-color: #243a77;
+        background-color: color.adjust($custom-blue, $lightness: -15);
         color: white;
       }
 
@@ -317,16 +343,16 @@ export default defineComponent({
     &.btn-lock {
       top: #{top_space(2)}px;
       background-color: white;
-      color: #ce7d2b;
+      color: $custom-orange;
 
       &:hover {
-        background-color: #ce7d2b;
+        background-color: $custom-orange;
         color: white;
       }
 
       &:active {
         transform: scale(105%, 105%);
-        background-color: #8d6228;
+        background-color: color.adjust($custom-orange, $lightness: -15);
         color: white;
       }
 
@@ -339,16 +365,16 @@ export default defineComponent({
     &.btn-unlock {
       top: #{top_space(2)}px;
       background-color: white;
-      color: #36ce2b;
+      color: $custom-green;
 
       &:hover {
-        background-color: #36ce2b;
+        background-color: $custom-green;
         color: white;
       }
 
       &:active {
         transform: scale(105%, 105%);
-        background-color: #2f9827;
+        background-color: color.adjust($custom-green, $lightness: -15);
         color: white;
       }
 
@@ -362,16 +388,16 @@ export default defineComponent({
     &.btn-delete {
       top: #{top_space(3)}px;
       background-color: white;
-      color: #ce2b2b;
+      color: $custom-red;
 
       &:hover {
-        background-color: #ce2b2b;
+        background-color: $custom-red;
         color: white;
       }
 
       &:active {
         transform: scale(105%, 105%);
-        background-color: #962525;
+        background-color: color.adjust($custom-red, $lightness: -15);
         color: white;
       }
 

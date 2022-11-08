@@ -142,7 +142,7 @@ export default defineComponent({
 
       &:active {
         transform: scale(105%, 105%);
-        background-color: #243a77;
+        background-color: #1a2f7c;
         color: white;
       }
 
@@ -165,7 +165,7 @@ export default defineComponent({
 
       &:active {
         transform: scale(105%, 105%);
-        background-color: #962525;
+        background-color: #8f1e1e;
         color: white;
       }
 

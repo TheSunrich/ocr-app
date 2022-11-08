@@ -17,13 +17,13 @@
         <b-button block variant="primary" pill>Buscar</b-button>
       </b-col>
       <b-col cols="1" class="d-grid">
-        <b-button block variant="primary" pill>
+        <b-button block :pressed.sync="checked" variant="primary" pill>
           <font-awesome-icon icon="fa-solid fa-link" size="lg"/>
         </b-button>
       </b-col>
     </b-row>
     <TransitionGroup name="list" tag="div" class="row" mode="out-in">
-      <FolderComponent v-for="folder in folders" :key="folder.name" :folder="folder" :index="folders.indexOf(folder)"/>
+      <FolderComponent v-for="folder in folders" :key="folder.name" :folder="folder"/>
     </TransitionGroup>
   </b-container>
 </template>
@@ -49,7 +49,7 @@ export default defineComponent({
       folders: [] as Folder[],
     }
   },
-  created() {
+  mounted() {
     if (this.$route.name === 'Folder') {
       this.getAll();
       emitter.on('folder-getList', this.getAll);
@@ -61,7 +61,17 @@ export default defineComponent({
       emitter.on('folder-getList', this.getFromBranch);
     }
   },
-  mounted() {},
+
+  computed:{
+    checked: {
+      get(): boolean {
+        return this.$store.state.isShareActive;
+      },
+      set(newValue: boolean) {
+        this.$store.commit('toggleShareActive');
+      }
+    }
+  },
   methods: {
     getAll() {
       this.axios.get('folder').then(response => {

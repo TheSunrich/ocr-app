@@ -1,27 +1,31 @@
 <template>
   <div id="app">
     <Sidebar/>
-    <div class="app_container" :style="{marginLeft: getSidebarWidth}">
+    <div class="app_container" :style="{marginLeft: getSidebarWidth, marginRight: getShareWidth}">
       <Navbar/>
       <transition name="fade" mode="out-in">
-        <router-view/>
+        <router-view :key="$route.name"/>
       </transition>
     </div>
+    <SharePanel/>
   </div>
 </template>
 
 <script lang="ts">
 import Sidebar from "@/components/Sidebar/Sidebar.vue";
 import Navbar from "@/components/Navbar/Navbar.vue";
+import SharePanel from "@/components/Share/SharePanel.vue";
 import Toast from "@/components/Toast/Toast.vue";
 import {emitter} from "@/main";
 import Vue, {defineComponent} from "vue";
 
-const SIDEBAR_WIDTH = 220;
+const SIDEBAR_WIDTH = 200;
 const SIDEBAR_WIDTH_COLLAPSED = 70;
+const SHARE_WIDTH = 275;
+const SHARE_WIDTH_COLLAPSED = 0;
 
 export default defineComponent({
-  components: {Navbar, Sidebar},
+  components: {Navbar, Sidebar, SharePanel},
   mounted() {
     emitter.on('show-toast', (args: any) => {
       this.$toast({
@@ -42,11 +46,20 @@ export default defineComponent({
     isCollapsed(): boolean {
       return this.$store.state.collapsed;
     },
+    isShareCollapsed(): boolean {
+      return !this.$store.state.isShareActive;
+    },
     getSidebarWidth(): string {
       if (this.$route.path.substring(this.$route.path.length - 6) === '/login') {
         return '0';
       }
       return `${this.isCollapsed ? SIDEBAR_WIDTH_COLLAPSED : SIDEBAR_WIDTH}px`;
+    },
+    getShareWidth(): string {
+      if (this.$route.path.substring(this.$route.path.length - 6) === '/login') {
+        return '0';
+      }
+      return `${this.isShareCollapsed ? SHARE_WIDTH_COLLAPSED : SHARE_WIDTH}px`;
     },
   },
   methods: {}
@@ -54,7 +67,37 @@ export default defineComponent({
 </script>
 
 <style lang="scss">
-@import './assets/scss/toast';
+@use './assets/scss/toast';
+@use './assets/scss/colors';
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(136, 136, 136, 0.75);
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #88888873;
+  border-radius: 100rem;
+  box-shadow: 2px 2px 4px #a8a8a8;
+}
+
+::-webkit-scrollbar-corner,
+::-webkit-scrollbar-track,
+::-webkit-scrollbar-track-piece {
+  background-color: #0000000C;
+}
+
+::-webkit-scrollbar {
+  height: 8px;
+  width: 8px;
+}
+
+.text-start {
+  text-align: start;
+}
+
+.text-end {
+  text-align: end;
+}
 
 .fade-enter-from,
 .fade-leave-to {

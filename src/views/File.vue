@@ -9,16 +9,11 @@
       </b-col>
     </b-row>
     <b-row class="mb-4 mt-2">
-      <b-col cols="9">
+      <b-col cols="10">
         <b-form-input v-model="search" placeholder="Búsqueda" type="search" size="lg"></b-form-input>
       </b-col>
       <b-col cols="2" class="d-grid">
         <b-button block variant="primary" pill>Buscar</b-button>
-      </b-col>
-      <b-col cols="1" class="d-grid">
-        <b-button block variant="primary" pill>
-          <font-awesome-icon icon="fa-solid fa-link" size="lg"/>
-        </b-button>
       </b-col>
     </b-row>
     <TransitionGroup name="list" tag="div" class="row" mode="out-in">

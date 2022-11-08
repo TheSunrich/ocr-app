@@ -1,11 +1,11 @@
 <template>
   <b-container fluid class="p-3">
     <b-row no-gutters>
-      <b-col md="11" class="text-start">
+      <b-col cols="11" class="text-start">
         <h1 class="welcome-text">Bienvenido <span>Usuario Invitado</span></h1>
       </b-col>
-      <b-col md="1" class="text-end">
-        <b-avatar
+      <b-col cols="1" class="text-end">
+        <b-avatar class="align-self-end"
             src="https://imgs.search.brave.com/dYn-zSgL-mtE1bBgenFqiV0z7SDI0C6ImyShLDatM-4/rs:fit:900:900:1/g:ce/aHR0cHM6Ly95dDMu/Z2dwaHQuY29tL2Ev/QUFUWEFKd3hPQ1Ut/bTBBQkNnakc5VmNf/ME5TbE10VnU1LVJR/TEs0N093PXM5MDAt/Yy1rLWMweGZmZmZm/ZmZmLW5vLXJqLW1v"></b-avatar>
       </b-col>
     </b-row>

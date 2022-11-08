@@ -24,7 +24,7 @@ import SidebarSeparator from "@/components/Sidebar/SidebarSeparator.vue";
 import {emitter} from "@/main";
 import {defineComponent} from "vue";
 
-const SIDEBAR_WIDTH = 220;
+const SIDEBAR_WIDTH = 200;
 const SIDEBAR_WIDTH_COLLAPSED = 70;
 
 export default defineComponent({
