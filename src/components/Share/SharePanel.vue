@@ -5,15 +5,27 @@
       <b-col cols="12" class="py-2" v-for="folder in folderList" :key="folder.name">
         <b-card>
           <b-card-body class="row p-0">
-            <b-col cols="2"><font-awesome-icon icon="fa-solid fa-folder" size="sm"/></b-col>
-            <b-col>{{ folder.name }}</b-col>
+            <b-col cols="2">
+              <font-awesome-icon icon="fa-solid fa-folder" size="sm"/>
+            </b-col>
+            <b-col cols="10">{{ folder.name }}</b-col>
           </b-card-body>
         </b-card>
       </b-col>
     </TransitionGroup>
-    <b-row class="share-form">
-      <b-col cols="12" class="pr-0">
-        <b-button :pressed.sync="checked" variant="primary" pill>Compartir</b-button>
+    <b-row class="share-form px-3">
+      <b-col cols="12" class="d-flex align-items-center">
+        <b-form-checkbox id="isPwd" v-model="isPwd" name="isPwd" class="d-inline-block"/>
+        <b-form-input v-model="pwd" placeholder="Contraseña" class="d-inline-block" :disabled="!isPwd"></b-form-input>
+      </b-col>
+      <b-col cols="12" class="d-flex align-items-center">
+        <b-form-checkbox id="isDate" v-model="isDate" name="isDate"/>
+        <b-form-datepicker v-model="date" class="text-left"
+                           :date-format-options="{ year: 'numeric', month: 'numeric', day: 'numeric' }"
+                           :disabled="!isDate" placeholder="Vencimiento" style="user-select: none"/>
+      </b-col>
+      <b-col cols="12">
+        <b-button class="mt-2" @click="shareFolders" variant="primary" block pill>Compartir</b-button>
       </b-col>
     </b-row>
   </div>
@@ -22,6 +34,9 @@
 <script lang="ts">
 import Folder from "@/models/folder";
 import {defineComponent} from "vue";
+import {emitter} from "@/main";
+import {types} from "sass";
+import List = types.List;
 
 const SHARE_WIDTH = 275;
 const SHARE_WIDTH_COLLAPSED = 0;
@@ -31,7 +46,10 @@ export default defineComponent({
   props: {},
   data() {
     return {
-      checked: false
+      isPwd: false,
+      isDate: false,
+      pwd: '',
+      date: '',
     }
   },
   computed: {
@@ -45,6 +63,52 @@ export default defineComponent({
       return this.$store.state.shareList;
     }
   },
+  methods: {
+    shareFolders(): void {
+      const title = 'Compartir carpetas';
+      let toastArgs = {};
+      let folders: Object[] = []
+      this.folderList.map(folder => {
+        folders.push({
+          name: folder.name,
+          idBranch: folder.idBranch
+        })
+      })
+      let data:any = {folders: folders}
+      if(this.isPwd){
+        data['pwd'] = this.pwd
+      }
+      if(this.isDate){
+        data['dateEnd'] = this.date
+      }
+      this.axios.post('shared', data).then(response => {
+        if (response.data.hasOwnProperty('error')) {
+          return;
+        } else if (response.data.hasOwnProperty('success')) {
+          toastArgs = {
+            title: title,
+            description: 'Las carpetas han sido compartidas correctamente',
+            type: 'success'
+          }
+        }
+        emitter.emit('show-toast', toastArgs);
+        this.shareFoldersModal()
+        this.$store.commit('emptyShareList');
+        this.$store.commit('toggleShareActive');
+      })
+    },
+    shareFoldersModal() {
+      this.$bvModal.msgBoxOk('Las carpetas han sido compartidas correctamente\nse ha generado un link: https://abc.com/a', {
+        title: 'Compartir Carpetas',
+        size: 'sm',
+        buttonSize: 'sm',
+        okVariant: 'success',
+        headerClass: 'p-2 border-bottom-0',
+        footerClass: 'p-2 border-top-0',
+        centered: true
+      })
+    }
+  }
 })
 </script>
 
@@ -101,7 +165,7 @@ export default defineComponent({
   .share-list {
     display: block;
     overflow: auto;
-    margin-bottom: 50px;
+    margin-bottom: 150px;
     height: 100%;
     padding: 10px 15px;
   }
@@ -110,10 +174,14 @@ export default defineComponent({
     position: fixed;
     bottom: 0;
     right: 0;
-    height: 50px;
-    width: 290px;
+    height: 150px;
+    width: 275px;
     margin: 0;
   }
+}
+
+::placeholder {
+  user-select: none;
 }
 
 </style>
