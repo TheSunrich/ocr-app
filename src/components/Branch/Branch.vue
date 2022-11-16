@@ -1,7 +1,7 @@
 <template>
   <b-col sm="6" md="4" lg="3" xl="2" class="py-3">
     <b-card no-body class="btn-branch shadow-sm">
-      <a class="btn-action btn-update" @click="show = !show">
+      <a class="btn-action btn-update" v-b-modal="'modifyBranch-' + branch.id">
         <font-awesome-icon icon="fa-solid fa-pencil" size="sm"/>
       </a>
       <a class="btn-action btn-lock" @click="showModal('unlock')" v-if="branch.status === 2">
@@ -19,28 +19,43 @@
       </blockquote>
     </b-card>
     <b-modal
-        v-model="show"
+        :id="'modifyBranch-' + branch.id"
         title="Editar Valores"
         header-bg-variant="blue"
         header-text-variant="light"
         okVariant="danger"
         okTitle="Aceptar"
         cancelTitle="Cancelar"
-        centered
-    >
-      <b-container fluid>
-        <b-row>
-          <b-col cols="12" class="py-2">
-            <b-form-input v-model="editBranch.name" placeholder="Enter your name"></b-form-input>
-          </b-col>
-          <b-col cols="7" class="py-2">
-            <b-form-input v-model="editBranch.city" placeholder="Enter your name"></b-form-input>
-          </b-col>
-          <b-col cols="5" class="py-2">
-            <b-form-input v-model="editBranch.state" placeholder="Enter your name"></b-form-input>
-          </b-col>
-        </b-row>
-      </b-container>
+        @show="resetForm"
+        @hidden="resetForm"
+        @ok="handleOk"
+        centered>
+      <b-form class="container-fluid" :ref="'modifyForm-'+branch.id" @submit.stop.prevent="editBranch">
+        <b-form-group
+            label-for="name"
+            :state="nameState">
+          <b-form-input v-model="editBranch.name" placeholder="Nombre" required></b-form-input>
+          <b-form-invalid-feedback>
+            El campo 'Nombre' es requerido
+          </b-form-invalid-feedback>
+        </b-form-group>
+        <b-form-group
+            label-for="name"
+            :state="nameState">
+          <b-form-input v-model="editBranch.city" placeholder="Ciudad" required></b-form-input>
+          <b-form-invalid-feedback>
+            El campo 'Ciudad' es requerido
+          </b-form-invalid-feedback>
+        </b-form-group>
+        <b-form-group
+            label-for="name"
+            :state="nameState">
+          <b-form-input v-model="editBranch.state" placeholder="Estado" required></b-form-input>
+          <b-form-invalid-feedback>
+            El campo 'Estado' es requerido
+          </b-form-invalid-feedback>
+        </b-form-group>
+      </b-form>
     </b-modal>
   </b-col>
 </template>
@@ -58,6 +73,9 @@ export default defineComponent({
   data() {
     return {
       show: false,
+      nameState: null,
+      cityState: null,
+      stateState: null,
       editBranch: {
         name: this.branch.name,
         city: this.branch.city,
@@ -117,6 +135,27 @@ export default defineComponent({
           }
         }
       })
+    },
+    checkFormValidity() {
+      const form: any = this.$refs['modifyForm' + this.branch.id];
+      this.nameState = form.name.checkValidity();
+      this.cityState = form.city.checkValidity()
+      this.stateState = form.state.checkValidity()
+      return form.checkValidity();
+    },
+    handleOk(bvModalEvent: any) {
+      bvModalEvent.preventDefault()
+      this.updateBranch()
+    },
+    resetForm() {
+      this.nameState = null;
+      this.cityState = null;
+      this.stateState = null;
+      this.editBranch = {
+        name: this.branch.name,
+        city: this.branch.city,
+        state: this.branch.state,
+      }
     },
     updateBranch() {
       const title = 'Modificación de sucursal';
@@ -188,6 +227,8 @@ export default defineComponent({
           }
           emitter.emit('show-toast', toastArgs);
         }
+      }).finally(() => {
+        this.$bvModal.hide('modifyBranch-' + this.branch.id)
       })
     },
     lockBranch() {

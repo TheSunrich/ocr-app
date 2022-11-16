@@ -6,20 +6,60 @@
       </b-col>
     </b-row>
     <b-row class="mb-4 mt-2">
-      <b-col cols="9">
-        <b-form-input v-model="search" placeholder="Búsqueda" type="search" size="lg"></b-form-input>
+      <b-col cols="11">
+        <b-form-input class="search-bar" v-model="txtSearch" placeholder="Búsqueda" type="search" size="lg"
+                      @update="search"></b-form-input>
       </b-col>
-      <b-col cols="2" class="d-grid">
-        <b-button block variant="primary" pill>Buscar</b-button>
-      </b-col>
-      <b-col cols="1" class="d-grid">
-        <b-button block variant="primary" pill>
-          <font-awesome-icon icon="fa-solid fa-plus"/>
+      <b-col cols="1" class="d-flex align-content-center justify-content-center">
+        <b-button block variant="green" pill v-b-modal.addBranch>
+          <font-awesome-icon icon="fa-solid fa-plus" size="xl"/>
         </b-button>
+        <b-modal
+            id="addBranch"
+            title="Agregar Nueva Sucursal"
+            header-bg-variant="green"
+            header-text-variant="light"
+            okVariant="danger"
+            okTitle="Aceptar"
+            cancelTitle="Cancelar"
+            @show="emptyForm"
+            @hidden="emptyForm"
+            @ok="handleOk"
+            centered>
+          <b-form class="container-fluid" ref="addForm" @submit.stop.prevent="addBranch">
+            <b-form-group
+                label-for="name"
+                :state="nameState">
+              <b-form-input id="name" name="name" v-model="newBranch.name" type="text" placeholder="Nombre"
+                            :state="nameState" required/>
+              <b-form-invalid-feedback>
+                El campo 'Nombre' es requerido
+              </b-form-invalid-feedback>
+            </b-form-group>
+            <b-form-group
+                label-for="city"
+                :state="cityState">
+              <b-form-input id="city" name="city" v-model="newBranch.city"
+                            :state="cityState" type="text" placeholder="Ciudad" required/>
+              <b-form-invalid-feedback>
+                El campo 'Ciudad' es requerido
+              </b-form-invalid-feedback>
+            </b-form-group>
+            <b-form-group
+                label-for="state"
+                :state="stateState">
+              <b-form-input id="state" name="state" v-model.trim="newBranch.state" type="text" placeholder="Estado"
+                            :state="stateState" required/>
+              <b-form-invalid-feedback>
+                El campo 'Estado' es requerido
+              </b-form-invalid-feedback>
+            </b-form-group>
+          </b-form>
+        </b-modal>
       </b-col>
     </b-row>
     <TransitionGroup name="list" tag="div" class="row" mode="out-in">
-      <BranchComponent v-for="branch of branches" :key="branch.id" :branch="branch"/>
+      <BranchComponent v-for="branch of searchBranches" :key="branch.id" :branch="branch"/>
     </TransitionGroup>
   </b-container>
 </template>
@@ -37,8 +77,17 @@ export default defineComponent({
   },
   data() {
     return {
-      search: '',
+      txtSearch: '',
       branches: [] as Branch[],
+      searchBranches: [] as Branch[],
+      nameState: null,
+      cityState: null,
+      stateState: null,
+      newBranch: {
+        name: '',
+        city: '',
+        state: '',
+      }
     }
   },
   created() {
@@ -48,6 +97,30 @@ export default defineComponent({
     emitter.on('branch-getAll', this.getAll);
   },
   methods: {
+    checkFormValidity: function () {
+      const form: any = this.$refs.addForm;
+      this.nameState = form.name.checkValidity();
+      this.cityState = form.city.checkValidity()
+      this.stateState = form.state.checkValidity()
+      return form.checkValidity();
+    },
+    handleOk(bvModalEvent: any) {
+      bvModalEvent.preventDefault()
+      this.addBranch()
+    },
+    search() {
+      let filteredBranches: Branch[] = [];
+      if (this.txtSearch == '') {
+        this.searchBranches = this.branches;
+        return;
+      }
+      this.branches.map(branch => {
+        if (branch.name.toLowerCase().includes(this.txtSearch.toLowerCase())) {
+          filteredBranches.push(branch)
+        }
+      })
+      this.searchBranches = filteredBranches
+    },
     getAll() {
       this.axios.get('branch').then(response => {
         if (response.data.hasOwnProperty('error')) {
@@ -61,12 +134,71 @@ export default defineComponent({
           return;
         }
         this.branches = response.data;
+        this.searchBranches = response.data;
       }).catch(error => {
         console.log(error);
       })
     },
-    add() {
+    emptyForm() {
+      this.nameState = null;
+      this.cityState = null;
+      this.stateState = null;
+      this.newBranch = {
+        name: '',
+        city: '',
+        state: '',
+      }
+    },
+    addBranch() {
+      if (!this.checkFormValidity()) {
+        return
+      }
 
+      const title = 'Agregar Nueva Sucursal';
+      let toastArgs = {};
+      this.axios.post(`branch`, this.newBranch).then(response => {
+        if (response.data.hasOwnProperty('error')) {
+          toastArgs = {
+            title: title,
+            description: 'Ha ocurrido un error inesperado',
+            type: 'error'
+          }
+          emitter.emit('show-toast', toastArgs);
+          return;
+        } else if (response.data.hasOwnProperty('success')) {
+          toastArgs = {
+            title: title,
+            description: 'La sucursal se ha agregado correctamente',
+            type: 'success'
+          }
+        }
+        emitter.emit('show-toast', toastArgs);
+        emitter.emit('branch-getAll');
+      }).catch(error => {
+        if (error.response.data.hasOwnProperty('error')) {
+          switch (error.response.data.error.code) {
+            case 430:
+              toastArgs = {
+                title: title,
+                description: 'La sucursal no ha podido ser agregada',
+                type: 'error'
+              }
+              break;
+            case 0:
+            default:
+              toastArgs = {
+                title: title,
+                description: 'Ha surgido un error inesperado',
+                type: 'error'
+              }
+              break;
+          }
+          emitter.emit('show-toast', toastArgs);
+        }
+      }).finally(() => {
+        this.emptyForm()
+        this.$bvModal.hide('addBranch');
+      })
     },
   }
 })
@@ -100,7 +232,7 @@ export default defineComponent({
   transform: translateX(200%);
 }
 
-.form-control {
+.form-control.search-bar {
   border-radius: 100rem;
 
   &:focus {

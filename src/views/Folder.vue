@@ -45,7 +45,7 @@ export default defineComponent({
   },
   data() {
     return {
-      search: '',
+      txtSearch: '',
       folders: [] as Folder[],
     }
   },

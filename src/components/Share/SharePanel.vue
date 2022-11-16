@@ -25,7 +25,7 @@
                            :disabled="!isDate" placeholder="Vencimiento" style="user-select: none"/>
       </b-col>
       <b-col cols="12">
-        <b-button class="mt-2" @click="shareFolders" variant="primary" block pill>Compartir</b-button>
+        <b-button class="mt-2" @click="shareFolders" variant="primary" block pill :disabled="folderList.length <= 0">Compartir</b-button>
       </b-col>
     </b-row>
   </div>
@@ -80,6 +80,15 @@ export default defineComponent({
       }
       if(this.isDate){
         data['dateEnd'] = this.date
+      }
+      if(folders.length <= 0){
+        toastArgs = {
+          title: title,
+          description: 'No se han elegido carpetas para compartir',
+          type: 'warning'
+        }
+        emitter.emit('show-toast', toastArgs);
+        return;
       }
       this.axios.post('shared', data).then(response => {
         if (response.data.hasOwnProperty('error')) {
