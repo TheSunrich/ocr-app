@@ -10,21 +10,26 @@
       </b-col>
     </b-row>
     <b-row class="mb-4 mt-2">
-      <b-col cols="9">
-        <b-form-input v-model="search" placeholder="Búsqueda" type="search" size="lg"></b-form-input>
+      <b-col cols="11">
+        <b-form-input v-model="txtSearch" placeholder="Búsqueda" type="search" size="lg"
+                      @update="search"></b-form-input>
       </b-col>
-      <b-col cols="2" class="d-grid">
-        <b-button block variant="primary" pill>Buscar</b-button>
-      </b-col>
-      <b-col cols="1" class="d-grid">
+      <b-col cols="1" class="d-flex align-content-center justify-content-center">
         <b-button block :pressed.sync="checked" variant="primary" pill>
           <font-awesome-icon icon="fa-solid fa-link" size="lg"/>
         </b-button>
       </b-col>
     </b-row>
     <TransitionGroup name="list" tag="div" class="row" mode="out-in">
-      <FolderComponent v-for="folder in folders" :key="folder.name" :folder="folder"/>
+      <FolderComponent v-for="folder in searchFolders" :key="folder.name" :folder="folder"/>
     </TransitionGroup>
+    <transition name="fade-no-content">
+      <b-row class="my-5" v-if="searchFolders.length <= 0">
+        <b-col>
+          <h2 class="no-content">No se han encontrado carpetas</h2>
+        </b-col>
+      </b-row>
+    </transition>
   </b-container>
 </template>
 
@@ -47,6 +52,7 @@ export default defineComponent({
     return {
       txtSearch: '',
       folders: [] as Folder[],
+      searchFolders: [] as Folder[],
     }
   },
   mounted() {
@@ -61,8 +67,7 @@ export default defineComponent({
       emitter.on('folder-getList', this.getFromBranch);
     }
   },
-
-  computed:{
+  computed: {
     checked: {
       get(): boolean {
         return this.$store.state.isShareActive;
@@ -73,6 +78,19 @@ export default defineComponent({
     }
   },
   methods: {
+    search() {
+      let filteredFolders: Folder[] = [];
+      if (this.txtSearch == '') {
+        this.searchFolders = this.folders;
+        return;
+      }
+      this.folders.map(folder => {
+        if (folder.name.toLowerCase().includes(this.txtSearch.toLowerCase())) {
+          filteredFolders.push(folder)
+        }
+      })
+      this.searchFolders = filteredFolders
+    },
     getAll() {
       this.axios.get('folder').then(response => {
         if (response.data.hasOwnProperty('error')) {
@@ -86,6 +104,7 @@ export default defineComponent({
           return;
         }
         this.folders = response.data;
+        this.searchFolders = response.data;
       }).catch(error => {
         console.log(error);
       })
@@ -103,6 +122,7 @@ export default defineComponent({
           return;
         }
         this.folders = response.data;
+        this.searchFolders = response.data;
       }).catch(error => {
         console.log(error);
       })
@@ -115,6 +135,19 @@ export default defineComponent({
 </script>
 
 <style scoped lang="scss">
+
+.fade-no-content-enter-active {
+  transition: opacity 0.4s;
+}
+
+.fade-no-content-leave-active {
+  transition: opacity 0.1s;
+}
+
+.fade-no-content-enter,
+.fade-no-content-leave-to {
+  opacity: 0;
+}
 
 .list-move,
 .list-enter-active,
@@ -177,5 +210,9 @@ export default defineComponent({
     border-color: #a1fe86;
     box-shadow: 0 0 0 0.25rem #46fd0d40;
   }
+}
+
+.no-content {
+  color: #d0d7d0;
 }
 </style>
