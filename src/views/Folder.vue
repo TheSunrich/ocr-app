@@ -136,6 +136,12 @@ export default defineComponent({
 
 <style scoped lang="scss">
 
+/*input[type='search']::-webkit-search-cancel-button{
+  -webkit-appearance: listitem;
+  background: red;
+}*/
+
+
 .fade-no-content-enter-active {
   transition: opacity 0.4s;
 }
