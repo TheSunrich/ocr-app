@@ -9,16 +9,15 @@
       </b-col>
     </b-row>
     <b-row class="mb-4 mt-2">
-      <b-col cols="10">
-        <b-form-input v-model="search" placeholder="Búsqueda" type="search" size="lg"></b-form-input>
-      </b-col>
-      <b-col cols="2" class="d-grid">
-        <b-button block variant="primary" pill>Buscar</b-button>
+      <b-col cols="12">
+        <b-form-input v-model="txtSearch" placeholder="Búsqueda" type="search" size="lg"
+                      @update="search"></b-form-input>
       </b-col>
     </b-row>
     <TransitionGroup name="list" tag="div" class="row" mode="out-in">
       <FolderComponent :folder="folderFile" :deleted="true" v-if="!isDeleted" :key="folder"/>
-      <FileComponent v-for="file in files" :key="file" :file="file" :branch="branch" :folder="folder" :pre-route="preRoute" :isDeleted="isDeleted"/>
+      <FileComponent v-for="file in searchFiles" :key="file" :file="file" :branch="branch" :folder="folder"
+                     :pre-route="preRoute" :isDeleted="isDeleted"/>
     </TransitionGroup>
   </b-container>
 </template>
@@ -48,6 +47,7 @@ export default defineComponent({
       txtSearch: '',
       isDeleted: this.deleted,
       files: [] as String[],
+      searchFiles: [] as String[]
     }
   },
   mounted() {
@@ -65,6 +65,19 @@ export default defineComponent({
     }
   },
   methods: {
+    search() {
+      let filteredFiles: String[] = [];
+      if (this.txtSearch == '') {
+        this.searchFiles = this.files;
+        return;
+      }
+      this.files.map(file => {
+        if (file.toLowerCase().includes(this.txtSearch.toLowerCase())) {
+          filteredFiles.push(file)
+        }
+      })
+      this.searchFiles = filteredFiles
+    },
     getAll(deleted: Boolean) {
       this.axios.get(`file/${this.branch.name}/${this.folder}`).then(response => {
         if (response.data.hasOwnProperty('error')) {
@@ -78,6 +91,7 @@ export default defineComponent({
           return;
         }
         this.files = deleted ? response.data.deleted : response.data.active;
+        this.searchFiles = deleted ? response.data.deleted : response.data.active;
       }).catch(error => {
         console.log(error);
       })
