@@ -22,15 +22,17 @@ import {
     faLockOpen, faCalendarXmark, faCircleCheck, faClose,
     faArrowRightToBracket, faArrowRightFromBracket, faFileCircleCheck, faFileCircleExclamation,
     faPlay, faChartColumn, faComputer, faPeopleLine,
-    faCodeBranch, faFolder, faFolderTree, faFolderOpen, faUsers, faShareAlt,
+    faCodeBranch, faFolder, faFolderTree, faFolderOpen, faUsers, faShareAlt, faUser,
     faShare, faShareNodes, faLink, faMagnifyingGlassMinus, faMagnifyingGlassPlus,
-    faArrowRotateLeft,
+    faArrowRotateLeft, faEye, faEyeSlash,
 } from '@fortawesome/free-solid-svg-icons'
 import {faBuilding, faFilePdf} from '@fortawesome/free-regular-svg-icons'
 
 export const emitter = mitt()
 
 library.add(
+    faEye,
+    faEyeSlash,
     faBars,
     faBorderAll,
     faBuilding,
@@ -68,10 +70,11 @@ library.add(
     faMagnifyingGlassMinus,
     faMagnifyingGlassPlus,
     faFilePdf,
-    faArrowRotateLeft
+    faArrowRotateLeft,
+    faUser
 )
 
-axios.defaults.baseURL = "http://localhost:8000/"
+axios.defaults.baseURL = "http://192.168.100.60:8000/"
 
 Vue.use(VueAxios, axios)
 

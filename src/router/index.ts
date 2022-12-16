@@ -4,6 +4,7 @@ import Branch from "@/views/Branch.vue";
 import Folder from "@/views/Folder.vue";
 import File from "@/views/File.vue";
 import FileDetail from "@/views/FileDetail.vue";
+import User from "@/views/User.vue";
 
 Vue.use(VueRouter)
 
@@ -12,6 +13,11 @@ const routes: Array<RouteConfig> = [
         path: '/branch',
         name: 'Branch',
         component: Branch,
+    },
+    {
+        path: '/user',
+        name: 'User',
+        component: User,
     },
     {
         path: '/branch/folder',

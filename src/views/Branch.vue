@@ -30,7 +30,7 @@
             <b-form-group
                 label-for="name"
                 :state="nameState">
-              <b-form-input id="name" name="name" v-model="newBranch.name" type="text" placeholder="Nombre"
+              <b-form-input id="name" name="name" v-model.trim="newBranch.name" type="text" placeholder="Nombre"
                             :state="nameState" required/>
               <b-form-invalid-feedback>
                 El campo 'Nombre' es requerido
@@ -39,7 +39,7 @@
             <b-form-group
                 label-for="city"
                 :state="cityState">
-              <b-form-input id="city" name="city" v-model="newBranch.city"
+              <b-form-input id="city" name="city" v-model.trim="newBranch.city"
                             :state="cityState" type="text" placeholder="Ciudad" required/>
               <b-form-invalid-feedback>
                 El campo 'Ciudad' es requerido
