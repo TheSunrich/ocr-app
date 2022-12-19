@@ -22,6 +22,9 @@ export default new Vuex.Store({
         toggleShareActive(state){
             state.isShareActive = !state.isShareActive;
         },
+        setShareActive(state, isShare: boolean){
+            state.isShareActive = isShare;
+        },
         addToShareList(state, folder: Folder) {
             state.shareList.push(folder);
         },

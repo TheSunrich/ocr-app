@@ -5,10 +5,16 @@ import Folder from "@/views/Folder.vue";
 import File from "@/views/File.vue";
 import FileDetail from "@/views/FileDetail.vue";
 import User from "@/views/User.vue";
+import Login from "@/views/Login.vue";
 
 Vue.use(VueRouter)
 
 const routes: Array<RouteConfig> = [
+    {
+        path: '/login',
+        name: 'Login',
+        component: Login,
+    },
     {
         path: '/branch',
         name: 'Branch',

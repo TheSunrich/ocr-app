@@ -1,8 +1,8 @@
 <template>
   <div id="app">
-    <Sidebar/>
+    <Sidebar v-if="$route.path.substring($route.path.length - 6) !== '/login'"/>
     <div class="app_container" :style="{marginLeft: getSidebarWidth, marginRight: getShareWidth}">
-      <Navbar/>
+      <Navbar v-if="$route.path.substring($route.path.length - 6) !== '/login'"/>
       <transition name="fade" mode="out-in">
         <router-view :key="$route.name"/>
       </transition>

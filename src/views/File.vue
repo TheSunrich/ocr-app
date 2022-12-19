@@ -51,6 +51,7 @@ export default defineComponent({
     }
   },
   mounted() {
+    this.$store.commit('setShareActive', false);
     this.getAll(this.isDeleted);
     console.log(this.branch)
     console.log(this.folder)

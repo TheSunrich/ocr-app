@@ -94,6 +94,7 @@ export default defineComponent({
     this.getAll();
   },
   mounted() {
+    this.$store.commit('setShareActive', false);
     emitter.on('branch-getAll', this.getAll);
   },
   methods: {
