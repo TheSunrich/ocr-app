@@ -50,6 +50,9 @@ export default defineComponent({
       searchFiles: [] as String[]
     }
   },
+  created() {
+    emitter.emit('check-routes');
+  },
   mounted() {
     this.$store.commit('setShareActive', false);
     this.getAll(this.isDeleted);

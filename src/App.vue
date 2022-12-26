@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <Sidebar v-if="$route.path.substring($route.path.length - 6) !== '/login'"/>
+    <Sidebar v-if="$route.path.substring($route.path.length - 6) !== '/login' && $store.state.user.role === 1"/>
     <div class="app_container" :style="{marginLeft: getSidebarWidth, marginRight: getShareWidth}">
       <Navbar v-if="$route.path.substring($route.path.length - 6) !== '/login'"/>
       <transition name="fade" mode="out-in">
@@ -26,6 +26,9 @@ const SHARE_WIDTH_COLLAPSED = 0;
 
 export default defineComponent({
   components: {Navbar, Sidebar, SharePanel},
+  created() {
+    this.correctRouting()
+  },
   mounted() {
     emitter.on('show-toast', (args: any) => {
       this.$toast({
@@ -41,6 +44,8 @@ export default defineComponent({
         toastClassName: "custom-toast",
       });
     });
+    emitter.on('check-routes', () => this.correctRouting());
+    console.log(this.$router.options.routes);
   },
   computed: {
     isCollapsed(): boolean {
@@ -50,19 +55,45 @@ export default defineComponent({
       return !this.$store.state.isShareActive;
     },
     getSidebarWidth(): string {
-      if (this.$route.path.substring(this.$route.path.length - 6) === '/login') {
+      if (this.$route.path.substring(this.$route.path.length - 6) === '/login' || this.$store.state.user.role !== 1) {
         return '0';
       }
       return `${this.isCollapsed ? SIDEBAR_WIDTH_COLLAPSED : SIDEBAR_WIDTH}px`;
     },
     getShareWidth(): string {
-      if (this.$route.path.substring(this.$route.path.length - 6) === '/login') {
+      if (this.$route.path.substring(this.$route.path.length - 6) === '/login' || this.$store.state.user.role !== 1) {
         return '0';
       }
       return `${this.isShareCollapsed ? SHARE_WIDTH_COLLAPSED : SHARE_WIDTH}px`;
     },
   },
-  methods: {}
+  methods: {
+    correctRouting() {
+      let items: any = []
+      this.$router.options.routes?.forEach(route => {
+        items.push(route.path)
+      })
+
+      if (this.$store.state.user === false) {
+        this.$router.push({name: 'Login', replace: true});
+        return;
+      }
+
+      if (this.$store.state.user.role === 2) {
+        if (this.$route.path === '/branch' || this.$route.path === '/user') {
+          this.$router.push({name: 'UserFolder', replace: true});
+        }
+      }
+
+      if (!items.includes(this.$route.path) || (this.$route.path === '/login' && this.$store.state.user !== false)) {
+        if (this.$store.state.user.role === 1) {
+          this.$router.push({name: 'Branch', replace: true});
+        } else if (this.$store.state.user.role === 2) {
+          this.$router.push({name: 'UserFolder', replace: true});
+        }
+      }
+    },
+  }
 })
 </script>
 

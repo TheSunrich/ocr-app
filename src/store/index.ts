@@ -2,6 +2,7 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import VuexPersistence from "vuex-persist";
 import Folder from "@/models/folder";
+import User from "@/models/user";
 
 const vuexPers = new VuexPersistence({
     storage: window.localStorage,
@@ -11,11 +12,19 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
     state: {
+        user: false as User | boolean,
+        token: false as string | boolean,
         collapsed: false,
         isShareActive: false,
         shareList: [] as Folder[]
     },
     mutations: {
+        setUser(state, user: User){
+            state.user = user;
+        },
+        setToken(state, token: string){
+            state.token = token;
+        },
         toggleSidebar(state) {
             state.collapsed = !state.collapsed;
         },

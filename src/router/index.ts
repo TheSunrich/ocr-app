@@ -35,6 +35,11 @@ const routes: Array<RouteConfig> = [
     },
     {
         path: '/folder',
+        name: 'UserFolder',
+        component: Folder,
+    },
+    {
+        path: '/folder',
         name: 'Folder',
         component: Folder,
 

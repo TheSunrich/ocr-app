@@ -91,6 +91,7 @@ export default defineComponent({
     }
   },
   created() {
+    emitter.emit('check-routes');
     this.getAll();
   },
   mounted() {
@@ -125,7 +126,7 @@ export default defineComponent({
     getAll() {
       this.axios.get('branch').then(response => {
         if (response.data.hasOwnProperty('error')) {
-          if (response.data.error.code == 440) {
+          if (response.data.error.code === 440) {
             emitter.emit('show-toast', {
               title: 'Lista de sucursales',
               description: 'No se han encontrado sucursales',

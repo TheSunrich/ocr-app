@@ -610,14 +610,14 @@ $custom-red: #ce2b2b;
     user-select: none;
 
     .btn-icon {
-      margin: 2.25rem !important;
+      margin: 2rem !important;
     }
 
     h2 {
       margin: 0;
       padding: 0 10px;
       text-align: center;
-      font-size: 20px;
+      font-size: 15px;
     }
   }
 }

@@ -74,7 +74,7 @@ library.add(
     faUser
 )
 
-axios.defaults.baseURL = "http://192.168.100.60:8000/"
+axios.defaults.baseURL = "http://192.168.100.60:5000/"
 
 Vue.use(VueAxios, axios)
 

@@ -79,11 +79,14 @@ export default defineComponent({
   },
   computed: {
     src(): String {
-      return `http://192.168.100.60:8000/files/${this.branch.name}/${this.code}/${this.file_name}`
+      return `http://192.168.100.60:5000/files/${this.branch.name}/${this.code}/${this.file_name}`
     },
     scaleClass(): String {
       return `scale-${this.scale}`
     }
+  },
+  created() {
+    emitter.emit('check-routes');
   },
   mounted() {
     this.getData();

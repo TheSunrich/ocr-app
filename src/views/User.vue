@@ -128,6 +128,7 @@ export default defineComponent({
     }
   },
   created() {
+    emitter.emit('check-routes');
     this.getAll();
   },
   mounted() {

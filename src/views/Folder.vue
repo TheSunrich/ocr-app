@@ -2,7 +2,7 @@
   <b-container fluid>
     <b-row>
       <b-col cols="12" class="nav-title">
-        <a class="btn-return" @click="returnToBranch" v-if="$route.name !== 'Folder'">
+        <a class="btn-return" @click="returnToBranch" v-if="$route.name === 'BranchFolder' && $store.state.user.role === 1">
           <font-awesome-icon icon="fa-solid fa-close" size="xl"/>
         </a>
         <h1 v-if="$route.name === 'Folder'">Carpetas</h1>
@@ -53,7 +53,11 @@ export default defineComponent({
       txtSearch: '',
       folders: [] as Folder[],
       searchFolders: [] as Folder[],
+      userBranch: {} as Branch
     }
+  },
+  created() {
+    emitter.emit('check-routes');
   },
   mounted() {
     if (this.$route.name === 'Folder') {
@@ -63,6 +67,10 @@ export default defineComponent({
       if (this.branch === undefined) {
         this.$router.replace({name: 'Branch'});
       }
+      this.getFromBranch();
+      emitter.on('folder-getList', this.getFromBranch);
+    } else if (this.$route.name === 'UserFolder') {
+      this.userBranch = this.$store.state.user.branch;
       this.getFromBranch();
       emitter.on('folder-getList', this.getFromBranch);
     }
@@ -75,6 +83,14 @@ export default defineComponent({
       set(newValue: boolean) {
         this.$store.commit('toggleShareActive');
       }
+    },
+    branchInfo(): Branch | undefined {
+      if (this.$route.name === 'BranchFolder') {
+        return this.branch;
+      } else if (this.$route.name === 'UserFolder') {
+        return this.userBranch;
+      }
+      return undefined;
     }
   },
   methods: {
@@ -110,7 +126,16 @@ export default defineComponent({
       })
     },
     getFromBranch() {
-      this.axios.get(`folder/${this.branch.id}/branch`).then(response => {
+      let branch: Branch | undefined = this.branchInfo;
+      if (branch === undefined){
+        emitter.emit('show-toast', {
+          title: 'Lista de carpetas',
+          description: 'Ha habido un error al cargar las carpetas',
+          type: 'error'
+        });
+        return;
+      }
+      this.axios.get(`folder/${branch.id}/branch`).then(response => {
         if (response.data.hasOwnProperty('error')) {
           if (response.data.error.code == 440) {
             emitter.emit('show-toast', {
