@@ -415,6 +415,7 @@ $custom-red: #ce2b2b;
 }
 
 .btn-branch {
+  height: 100%;
   border: none;
   transition: background-color ease-in-out 0.15s;
 
@@ -559,7 +560,7 @@ $custom-red: #ce2b2b;
       margin: 0;
       padding: 0 10px;
       text-align: center;
-      font-size: 20px;
+      font-size: 15px;
     }
   }
 }

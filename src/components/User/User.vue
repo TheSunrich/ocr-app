@@ -32,34 +32,12 @@
         centered>
       <b-form class="container-fluid" :ref="'modifyForm-'+user.id" @submit.stop.prevent="updateUser">
         <b-form-group class="mb-3" label="Nombre:">
-          <b-form-input id="name" name="name" type="text" v-model.trim="editUser.name" required
+          <b-form-input id="name" name="name" type="text" v-model.trim="editUser.name" disabled
                         :state="nameState"></b-form-input>
-          <b-form-invalid-feedback>
-            El campo 'Nombre' es requerido
-          </b-form-invalid-feedback>
         </b-form-group>
-        <b-form-group class="mb-3" label="Email:">
-          <b-form-input id="email" name="email" type="email" v-model.trim="editUser.email" required
-                        :state="emailState"></b-form-input>
-          <b-form-invalid-feedback>
-            El campo 'Email' es requerido
-          </b-form-invalid-feedback>
-        </b-form-group>
-        <b-form-group class="mb-3" label="Rol:">
-          <b-form-select name="role" id="role" v-model="editUser.role" required :state="roleState">
-            <b-form-select-option :value="1">1</b-form-select-option>
-            <b-form-select-option :value="2">2</b-form-select-option>
-            <b-form-select-option :value="3">3</b-form-select-option>
-          </b-form-select>
-          <b-form-invalid-feedback>
-            El campo 'Rol' es requerido
-          </b-form-invalid-feedback>
-        </b-form-group>
-        <b-form-group class="mb-3" label="Sucursal: " v-if="editUser.role !== 1 && editUser.role !== null">
-          <b-form-select name="role" id="role" v-model="editUser.idBranch" required :state="idBranchState">
-            <b-form-select-option :value="1">1</b-form-select-option>
-            <b-form-select-option :value="2">2</b-form-select-option>
-            <b-form-select-option :value="3">3</b-form-select-option>
+        <b-form-group class="mb-3" label="Sucursal: ">
+          <b-form-select name="role" id="role" v-model="editUser.idBranch.toString()" :options="branches" required
+                         value-field="id" text-field="name" :state="idBranchState">
           </b-form-select>
           <b-form-invalid-feedback>
             El campo 'Sucursal' es requerido
@@ -126,8 +104,12 @@ export default defineComponent({
         role: this.user.role as number | null,
         name: this.user.name,
         idBranch: this.user.idBranch,
-      }
+      },
+      branches: []
     }
+  },
+  mounted() {
+    this.getAllBranches()
   },
   methods: {
     showUserDetail() {
@@ -210,6 +192,23 @@ export default defineComponent({
         name: this.user.name,
         idBranch: undefined,
       }
+    },
+    getAllBranches() {
+      this.axios.get('branch').then(response => {
+        if (response.data.hasOwnProperty('error')) {
+          if (response.data.error.code === 440) {
+            emitter.emit('show-toast', {
+              title: 'Lista de sucursales',
+              description: 'No se han encontrado sucursales',
+              type: 'warning'
+            });
+          }
+          return;
+        }
+        this.branches = response.data;
+      }).catch(error => {
+        console.log(error);
+      })
     },
     updateUser() {
       if (!this.checkFormValidity()) {
@@ -473,6 +472,7 @@ $custom-red: #ce2b2b;
 
 .btn-user {
   min-height: 150px;
+  height: 100%;
   border: none;
   transition: background-color ease-in-out 0.15s;
 

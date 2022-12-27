@@ -4,13 +4,13 @@
       <a class="btn-action btn-update" @click="updateFolder" v-if="!deleted">
         <font-awesome-icon icon="fa-solid fa-pencil" size="sm"/>
       </a>
-      <a class="btn-action btn-lock" @click="unlockFolder" v-if="folder.status === 2 && !deleted">
+      <a class="btn-action btn-lock" @click="showModal('unlock')" v-if="folder.status === 2 && !deleted">
         <font-awesome-icon icon="fa-solid fa-lock" size="sm"/>
       </a>
-      <a class="btn-action btn-unlock" @click="lockFolder" v-else-if="folder.status === 1 && !deleted">
+      <a class="btn-action btn-unlock" @click="showModal('lock')" v-else-if="folder.status === 1 && !deleted">
         <font-awesome-icon icon="fa-solid fa-lock-open" size="xs"/>
       </a>
-      <a class="btn-action btn-delete" @click="deleteFolder" v-if="!deleted">
+      <a class="btn-action btn-delete" @click="showModal('delete')" v-if="!deleted">
         <font-awesome-icon icon="fa-solid fa-trash" size="sm"/>
       </a>
       <b-form-checkbox v-model="checked" class="folder-checkbox" v-if="$store.state.isShareActive"
@@ -18,7 +18,7 @@
       <blockquote class="card-blockquote" @click="whenActivate">
         <font-awesome-icon class="btn-icon m-4" icon="fa-solid fa-folder" size="4x"/>
         <h2>{{ folder.name }}</h2>
-        <h3 v-if="$route.name === 'Folder'">{{ folder.branch.name }}</h3>
+        <h3 v-if="$route.name === 'Folder'">{{ folder.branch.name }} </h3>
       </blockquote>
     </b-card>
   </b-col>
@@ -66,6 +66,55 @@ export default defineComponent({
           folder: String(this.folder.name),
           deleted: String(this.deleted),
           preRoute: String(this.$route.name)
+        }
+      })
+    },
+    showModal(type: string) {
+      let msg: string = '', title: string = '', color = '';
+      switch (type) {
+        case 'delete':
+          msg = '¿Esta seguro de querer eliminar la carpeta?';
+          title = 'Eliminar carpeta';
+          color = 'red';
+          break;
+        case 'lock':
+          msg = '¿Esta seguro de querer bloquear la carpeta?';
+          title = 'Bloquear carpeta';
+          color = 'orange';
+          break;
+        case 'unlock':
+          msg = '¿Esta seguro de querer desbloquear la carpeta?';
+          title = 'Desbloquear carpeta';
+          color = 'green';
+          break;
+      }
+      this.$bvModal.msgBoxConfirm(msg, {
+        title: title,
+        size: 'sm',
+        buttonSize: 'sm',
+        okVariant: 'danger',
+        okTitle: 'Aceptar',
+        headerBgVariant: color,
+        headerTextVariant: 'light',
+        cancelTitle: 'Cancelar',
+        footerClass: 'p-2',
+        hideHeaderClose: false,
+        centered: true,
+        noCloseOnEsc: true,
+        noCloseOnBackdrop: true
+      }).then(value => {
+        if (value) {
+          switch (type) {
+            case 'delete':
+              this.deleteFolder();
+              break;
+            case 'lock':
+              this.lockFolder();
+              break;
+            case 'unlock':
+              this.unlockFolder();
+              break;
+          }
         }
       })
     },

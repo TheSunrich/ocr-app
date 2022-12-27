@@ -2,7 +2,8 @@
   <b-container fluid>
     <b-row>
       <b-col cols="12" class="nav-title">
-        <a class="btn-return" @click="returnToBranch" v-if="$route.name === 'BranchFolder' && $store.state.user.role === 1">
+        <a class="btn-return" @click="returnToBranch"
+           v-if="$route.name === 'BranchFolder' && $store.state.user.role === 1">
           <font-awesome-icon icon="fa-solid fa-close" size="xl"/>
         </a>
         <h1 v-if="$route.name === 'Folder'">Carpetas</h1>
@@ -21,7 +22,8 @@
       </b-col>
     </b-row>
     <TransitionGroup name="list" tag="div" class="row" mode="out-in">
-      <FolderComponent v-for="folder in searchFolders" :key="folder.name" :folder="folder"/>
+      <FolderComponent v-for="folder in searchFolders" :key="folder.name"
+                       :folder="folder"/>
     </TransitionGroup>
     <transition name="fade-no-content">
       <b-row class="my-5" v-if="searchFolders.length <= 0">
@@ -39,6 +41,7 @@ import FolderComponent from '@/components/Folder/Folder.vue';
 import Branch from "@/models/branch";
 import {emitter} from "@/main";
 import Folder from "@/models/folder";
+import folder from "@/components/Folder/Folder.vue";
 
 export default defineComponent({
   name: "Folder",
@@ -81,6 +84,7 @@ export default defineComponent({
         return this.$store.state.isShareActive;
       },
       set(newValue: boolean) {
+        this.$store.commit('emptyShareList');
         this.$store.commit('toggleShareActive');
       }
     },
@@ -127,7 +131,7 @@ export default defineComponent({
     },
     getFromBranch() {
       let branch: Branch | undefined = this.branchInfo;
-      if (branch === undefined){
+      if (branch === undefined) {
         emitter.emit('show-toast', {
           title: 'Lista de carpetas',
           description: 'Ha habido un error al cargar las carpetas',
