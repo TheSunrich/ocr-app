@@ -2,6 +2,7 @@
 export interface IBranch {
 
     id?: number
+    serie: string
     name: string
     city: string
     state: string
@@ -10,6 +11,7 @@ export interface IBranch {
 
 export class BranchDTO implements IBranch {
     id?: number;
+    serie: string = ''
     name: string = '';
     city: string = '';
     state: string = '';

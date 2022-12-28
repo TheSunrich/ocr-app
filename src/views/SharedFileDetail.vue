@@ -1,9 +1,9 @@
 <template>
   <b-container fluid>
     <b-row>
-      <b-col cols="12" class="nav-title">
+      <b-col cols="12" class="nav-title m-3">
         <a class="btn-return" @click="returnToFileList">
-          <font-awesome-icon icon="fa-solid fa-close" size="xl"/>
+          <font-awesome-icon icon="fa-solid fa-close" size="xl" />
         </a>
         <h1>Detalle de archivo</h1>
       </b-col>
@@ -14,16 +14,16 @@
           <b-col cols="12" class="mb-2">
             <b-button-group>
               <b-button @click="scaleDecrement" :disabled="scale <= 1">
-                <font-awesome-icon icon="fa-solid fa-magnifying-glass-minus"/>
+                <font-awesome-icon icon="fa-solid fa-magnifying-glass-minus" />
               </b-button>
               <b-button @click="scaleIncrement" :disabled="scale >= 15">
-                <font-awesome-icon icon="fa-solid fa-magnifying-glass-plus"/>
+                <font-awesome-icon icon="fa-solid fa-magnifying-glass-plus" />
               </b-button>
               <b-button @click="downloadFile">Descargar</b-button>
             </b-button-group>
           </b-col>
           <b-col cols="12">
-            <VuePdfEmbed :source="src" :page="1" :class="scaleClass"/>
+            <VuePdfEmbed :source="src" :page="1" :class="scaleClass" />
           </b-col>
         </b-row>
       </b-col>
@@ -32,17 +32,17 @@
           <b-row class="px-3">
             <b-col cols="12">
               <h3>Nombre: </h3>
-              <b-form-input v-model="file.title" type="text" readonly/>
-              <br/>
+              <b-form-input v-model="file.title" type="text" readonly />
+              <br />
             </b-col>
             <b-col cols="12">
               <h3>Código: </h3>
-              <b-form-input v-model="file.code" type="text" readonly/>
-              <br/>
+              <b-form-input v-model="file.code" type="text" readonly />
+              <br />
             </b-col>
             <b-col cols="12">
               <h3>Fecha de Creación: </h3>
-              <b-form-input v-model="file.creation_date" type="text" readonly/>
+              <b-form-input v-model="file.creation_date" type="text" readonly />
             </b-col>
           </b-row>
         </b-col>
@@ -66,7 +66,7 @@ export default defineComponent({
     branch: {type: Branch, required: true},
     code: {type: String, required: true},
     file_name: {type: String, required: true},
-    preRoute: {type: String, required: true}
+    shared_code: {type: String, required: true}
   },
   data() {
     return {
@@ -151,8 +151,13 @@ export default defineComponent({
       link.download = this.file_name;
       link.click();
     },
-    returnToFileList(){
-      this.$router.replace({name: 'FolderFiles', params: {branch: JSON.stringify(this.branch), folder: this.code, preRoute: this.preRoute}});
+    returnToFileList() {
+      const id = this.shared_code;
+      this.$router.push({
+        name: 'SharedFolderFiles',
+        params: {id, folder: this.code, shared_code: id, branchId: String(this.branch.id)},
+        replace: true
+      });
     }
   }
 })

@@ -1,9 +1,10 @@
 <template>
   <b-col sm="6" md="4" lg="3" xl="2" class="py-3">
     <b-card no-body class="btn-branch shadow-sm">
-      <blockquote class="card-blockquote" @click="showFolders">
-        <img class="btn-icon m-4" src="../../assets/img/sucursal.png" alt=""/>
-        <h2>{{ branch.name }}</h2>
+      <blockquote class="card-blockquote" @click="showFiles">
+        <font-awesome-icon class="btn-icon m-4" icon="fa-solid fa-folder" size="4x" />
+        <h2>{{ folder.name }}</h2>
+        <h3 v-if="$route.name === 'Folder'">{{ folder.branch.name }} </h3>
       </blockquote>
     </b-card>
   </b-col>
@@ -11,33 +12,27 @@
 
 <script lang="ts">
 import {defineComponent, PropType} from "vue";
-import Branch from "@/models/branch";
-import {emitter} from "@/main";
+import Folder from "@/models/folder";
 
 export default defineComponent({
-  name: "BranchComponent",
+  name: "SharedFolderComponent",
   props: {
-    branch: {type: Object as PropType<Branch>, required: true}
-  },
-  data() {
-    return {
-      show: false,
-      nameState: null,
-      cityState: null,
-      stateState: null,
-      editBranch: {
-        name: this.branch.name,
-        city: this.branch.city,
-        state: this.branch.state,
-      }
-    }
+    shareCode: {type: String, required: true},
+    branchId: {type: Number, required: true},
+    folder: {type: Object as PropType<Folder>, required: true},
   },
   methods: {
-    showFolders() {
-      this.$router.push({name: 'BranchFolder', params: {branch: JSON.stringify(this.branch)}})
+    showFiles() {
+      this.$router.push({
+        name: 'SharedFolderFiles',
+        params:{
+          shared_code: String(this.shareCode),
+          folder: String(this.folder.name),
+          branchId: String(this.branchId),
+        }
+      })
     },
-  },
-
+  }
 })
 </script>
 
@@ -54,16 +49,15 @@ $custom-red: #ce2b2b;
 }
 
 .btn-branch {
-  height: 100%;
   border: none;
   transition: background-color ease-in-out 0.15s;
 
-  &:has(.list-enter-to) {
-    opacity: 0;
-  }
-
   &:hover {
     background-color: rgba(44, 62, 80, 0.15);
+  }
+
+  &:has(> .folder-checkbox), &:active:has(> .folder-checkbox) {
+    background-color: #FFF;
   }
 
   &:has(> .btn-update:hover) {
@@ -86,6 +80,10 @@ $custom-red: #ce2b2b;
     background-color: rgba(44, 62, 80, 0.45);
   }
 
+  .folder-checkbox {
+    position: absolute;
+    transform: translate(10px, 6px);
+  }
 
   .btn-action {
     transition: background-color ease-in-out 0.25s, color ease-in-out 0.25s, transform ease-in-out 0.05s;
@@ -121,7 +119,7 @@ $custom-red: #ce2b2b;
     }
 
     &.btn-lock {
-      top: #{top_space(2)}px;
+      top: #{top_space(1)}px;
       background-color: white;
       color: $custom-orange;
 
@@ -143,7 +141,7 @@ $custom-red: #ce2b2b;
     }
 
     &.btn-unlock {
-      top: #{top_space(2)}px;
+      top: #{top_space(1)}px;
       background-color: white;
       color: $custom-green;
 
@@ -166,7 +164,7 @@ $custom-red: #ce2b2b;
 
 
     &.btn-delete {
-      top: #{top_space(3)}px;
+      top: #{top_space(2)}px;
       background-color: white;
       color: $custom-red;
 
@@ -192,15 +190,23 @@ $custom-red: #ce2b2b;
     user-select: none;
 
     .btn-icon {
-      width: 50%;
       margin: 2.25rem !important;
     }
 
     h2 {
+      user-select: none;
       margin: 0;
       padding: 0 10px;
       text-align: center;
-      font-size: 15px;
+      font-size: 20px;
+    }
+
+    h3 {
+      user-select: none;
+      margin: 0;
+      padding: 0 10px;
+      text-align: center;
+      font-size: 14px;
     }
   }
 }

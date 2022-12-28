@@ -1,13 +1,13 @@
 <template>
   <div id="app">
-    <Sidebar v-if="$route.path.substring($route.path.length - 6) !== '/login' && $store.state.user.role === 1"/>
+    <Sidebar v-if="($route.name !== 'SharedFolders' && $route.name !== 'SharedFolderFiles' && $route.name !== 'SharedFile' && $store.state.user !== false) || ($route.path.substring($route.path.length - 6) !== '/login' && $store.state.user.role === 1)" />
     <div class="app_container" :style="{marginLeft: getSidebarWidth, marginRight: getShareWidth}">
-      <Navbar v-if="$route.path.substring($route.path.length - 6) !== '/login'"/>
+      <Navbar v-if="$route.path.substring($route.path.length - 6) !== '/login' && $store.state.user" />
       <transition name="fade" mode="out-in">
-        <router-view :key="$route.name"/>
+        <router-view :key="$route.name" />
       </transition>
     </div>
-    <SharePanel/>
+    <SharePanel />
   </div>
 </template>
 
@@ -45,7 +45,6 @@ export default defineComponent({
       });
     });
     emitter.on('check-routes', () => this.correctRouting());
-    console.log(this.$router.options.routes);
   },
   computed: {
     isCollapsed(): boolean {
@@ -55,13 +54,13 @@ export default defineComponent({
       return !this.$store.state.isShareActive;
     },
     getSidebarWidth(): string {
-      if (this.$route.path.substring(this.$route.path.length - 6) === '/login' || this.$store.state.user.role !== 1) {
+      if (((this.$route.name === 'SharedFolders' || this.$route.name === 'SharedFolderFiles' || this.$route.name === 'SharedFile') && this.$store.state.user === false) || (this.$route.path.substring(this.$route.path.length - 6) === '/login' && this.$store.state.user.role !== 1)) {
         return '0';
       }
       return `${this.isCollapsed ? SIDEBAR_WIDTH_COLLAPSED : SIDEBAR_WIDTH}px`;
     },
     getShareWidth(): string {
-      if (this.$route.path.substring(this.$route.path.length - 6) === '/login' || this.$store.state.user.role !== 1) {
+      if (((this.$route.name === 'SharedFolders' || this.$route.name === 'SharedFolderFiles' || this.$route.name === 'SharedFile') && this.$store.state.user === false) || (this.$route.path.substring(this.$route.path.length - 6) === '/login' && this.$store.state.user.role !== 1)) {
         return '0';
       }
       return `${this.isShareCollapsed ? SHARE_WIDTH_COLLAPSED : SHARE_WIDTH}px`;
@@ -71,8 +70,12 @@ export default defineComponent({
     correctRouting() {
       let items: any = []
       this.$router.options.routes?.forEach(route => {
-        items.push(route.path)
+        items.push(route.name)
       })
+
+      if (this.$route.name === 'SharedFolders' || this.$route.name === 'SharedFolderFiles' || this.$route.name === 'SharedFile') {
+        return;
+      }
 
       if (this.$store.state.user === false) {
         this.$router.push({name: 'Login', replace: true});
@@ -80,18 +83,19 @@ export default defineComponent({
       }
 
       if (this.$store.state.user.role === 2) {
-        if (this.$route.path === '/branch' || this.$route.path === '/user') {
+        if (this.$route.name === 'Branch' || this.$route.path === 'User') {
           this.$router.push({name: 'UserFolder', replace: true});
         }
       }
 
-      if (!items.includes(this.$route.path) || (this.$route.path === '/login' && this.$store.state.user !== false)) {
+      if (!items.includes(this.$route.name) || (this.$route.name === 'Login' && this.$store.state.user !== false)) {
         if (this.$store.state.user.role === 1) {
           this.$router.push({name: 'Branch', replace: true});
         } else if (this.$store.state.user.role === 2) {
           this.$router.push({name: 'UserFolder', replace: true});
         }
       }
+
     },
   }
 })

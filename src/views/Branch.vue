@@ -6,56 +6,9 @@
       </b-col>
     </b-row>
     <b-row class="mb-4 mt-2">
-      <b-col cols="11">
+      <b-col cols="12">
         <b-form-input class="search-bar" v-model="txtSearch" placeholder="Búsqueda" type="search" size="lg"
                       @update="search"></b-form-input>
-      </b-col>
-      <b-col cols="1" class="d-flex align-content-center justify-content-center">
-        <b-button block variant="green" pill v-b-modal.addBranch>
-          <font-awesome-icon icon="fa-solid fa-plus" size="xl"/>
-        </b-button>
-        <b-modal
-            id="addBranch"
-            title="Agregar Nueva Sucursal"
-            header-bg-variant="green"
-            header-text-variant="light"
-            okVariant="danger"
-            okTitle="Aceptar"
-            cancelTitle="Cancelar"
-            @show="emptyForm"
-            @hidden="emptyForm"
-            @ok="handleOk"
-            centered>
-          <b-form class="container-fluid" ref="addForm" @submit.stop.prevent="addBranch">
-            <b-form-group
-                label-for="name"
-                :state="nameState">
-              <b-form-input id="name" name="name" v-model.trim="newBranch.name" type="text" placeholder="Nombre"
-                            :state="nameState" required/>
-              <b-form-invalid-feedback>
-                El campo 'Nombre' es requerido
-              </b-form-invalid-feedback>
-            </b-form-group>
-            <b-form-group
-                label-for="city"
-                :state="cityState">
-              <b-form-input id="city" name="city" v-model.trim="newBranch.city"
-                            :state="cityState" type="text" placeholder="Ciudad" required/>
-              <b-form-invalid-feedback>
-                El campo 'Ciudad' es requerido
-              </b-form-invalid-feedback>
-            </b-form-group>
-            <b-form-group
-                label-for="state"
-                :state="stateState">
-              <b-form-input id="state" name="state" v-model.trim="newBranch.state" type="text" placeholder="Estado"
-                            :state="stateState" required/>
-              <b-form-invalid-feedback>
-                El campo 'Estado' es requerido
-              </b-form-invalid-feedback>
-            </b-form-group>
-          </b-form>
-        </b-modal>
       </b-col>
     </b-row>
     <TransitionGroup name="list" tag="div" class="row" mode="out-in">

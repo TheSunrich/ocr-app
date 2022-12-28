@@ -7,7 +7,7 @@
     </b-row>
     <b-row class="mb-4 mt-2">
       <b-col sm="9" md="10" xl="11">
-        <b-form-input class="search-bar" v-model="txtSearch"
+        <b-form-input class="search-bar" v-model="txtSearch" placeholder="Búsqueda" type="search" size="lg"
                       @update="search"></b-form-input>
       </b-col>
       <b-col sm="3" md="2" xl="1" class="d-flex align-content-center justify-content-center">

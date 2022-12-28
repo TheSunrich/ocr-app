@@ -6,10 +6,39 @@ import File from "@/views/File.vue";
 import FileDetail from "@/views/FileDetail.vue";
 import User from "@/views/User.vue";
 import Login from "@/views/Login.vue";
+import Shared from "@/views/Shared.vue";
+import SharedFolder from "@/views/SharedFolder.vue";
+import SharedFileDetail from "@/views/SharedFileDetail.vue";
 
 Vue.use(VueRouter)
 
 const routes: Array<RouteConfig> = [
+    {
+        path: '/shared/:id',
+        name: 'SharedFolders',
+        component: Shared,
+    },
+    {
+        path: '/shared/:id/file',
+        name: 'SharedFolderFiles',
+        component: SharedFolder,
+        props: (route) => ({
+            shared_code: route.params.shared_code === undefined ? undefined : String(route.params.shared_code),
+            folder: route.params.folder === undefined ? undefined : String(route.params.folder),
+            branchId: route.params.branchId === undefined ? undefined : Number(route.params.branchId)
+        })
+    },
+    {
+        path: '/shared/:id/file/detail',
+        name: 'SharedFile',
+        component: SharedFileDetail,
+        props: (route) => ({
+            branch: route.params.branch === undefined ? undefined : JSON.parse(route.params.branch),
+            code: route.params.code === undefined ? undefined : String(route.params.code),
+            file_name: route.params.file_name === undefined ? undefined : String(route.params.file_name),
+            shared_code: route.params.shared_code === undefined ? undefined : String(route.params.shared_code),
+        })
+    },
     {
         path: '/login',
         name: 'Login',

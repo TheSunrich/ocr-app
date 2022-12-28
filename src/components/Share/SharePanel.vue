@@ -8,7 +8,7 @@
             <b-col cols="2">
               <font-awesome-icon icon="fa-solid fa-folder" size="sm"/>
             </b-col>
-            <b-col cols="10">{{ folder.name }}</b-col>
+            <b-col cols="10" class="folder-name">{{ folder.name }}</b-col>
           </b-card-body>
         </b-card>
       </b-col>
@@ -74,7 +74,10 @@ export default defineComponent({
           idBranch: folder.idBranch
         })
       })
-      let data:any = {folders: folders}
+      let data:any = {
+        idUser: this.$store.state.user.id,
+        folders: folders
+      }
       if(this.isPwd){
         data['pwd'] = this.pwd
       }
@@ -146,6 +149,10 @@ export default defineComponent({
 .list-leave-active {
   position: absolute;
   transform: translateX(200%);
+}
+
+.folder-name{
+  user-select: none;
 }
 
 .share-sidebar {

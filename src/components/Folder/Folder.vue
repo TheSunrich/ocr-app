@@ -1,9 +1,6 @@
 <template>
   <b-col sm="6" md="4" lg="3" xl="2" class="py-3">
     <b-card no-body class="btn-branch shadow-sm">
-      <a class="btn-action btn-update" @click="updateFolder" v-if="!deleted">
-        <font-awesome-icon icon="fa-solid fa-pencil" size="sm"/>
-      </a>
       <a class="btn-action btn-lock" @click="showModal('unlock')" v-if="folder.status === 2 && !deleted">
         <font-awesome-icon icon="fa-solid fa-lock" size="sm"/>
       </a>
@@ -13,7 +10,7 @@
       <a class="btn-action btn-delete" @click="showModal('delete')" v-if="!deleted">
         <font-awesome-icon icon="fa-solid fa-trash" size="sm"/>
       </a>
-      <b-form-checkbox v-model="checked" class="folder-checkbox" v-if="$store.state.isShareActive"
+      <b-form-checkbox v-bind:checked="checked" class="folder-checkbox" v-if="$store.state.isShareActive"
                        @change="toggleShareList"/>
       <blockquote class="card-blockquote" @click="whenActivate">
         <font-awesome-icon class="btn-icon m-4" icon="fa-solid fa-folder" size="4x"/>
@@ -35,14 +32,14 @@ export default defineComponent({
     folder: {type: Object as PropType<Folder>, required: true},
     deleted: {type: Boolean, default: false},
   },
-  data() {
-    return {
-      checked: false,
-    }
-  },
-  mounted() {
-    if (this.$store.state.shareList.find((folder: Folder) => folder.name === this.folder.name && folder.idBranch === this.folder.idBranch)) {
-      this.checked = true;
+  computed: {
+    checked: {
+      get(): boolean {
+        return !!this.$store.state.shareList.find((folder: Folder) => folder.name === this.folder.name && folder.idBranch === this.folder.idBranch)
+      },
+      set(newValue: boolean) {
+
+      }
     }
   },
   methods: {
@@ -120,9 +117,6 @@ export default defineComponent({
     },
     showDeletedFiles() {
       emitter.emit('file-getList', {deleted: true})
-    },
-    updateFolder() {
-      //this.axios.put(`branch/${this.branch.id}`).then().catch()
     },
     lockFolder() {
       const title = 'Bloqueo de carpeta';
@@ -295,11 +289,11 @@ export default defineComponent({
       })
     },
     toggleShareList() {
-      if (this.checked)
-        this.$store.commit('addToShareList', this.folder);
-      else {
-        let selectedFolder: Folder = this.$store.state.shareList.find((folder: Folder) => folder.name === this.folder.name && folder.idBranch === this.folder.idBranch);
+      let selectedFolder: Folder = this.$store.state.shareList.find((folder: Folder) => folder.name === this.folder.name && folder.idBranch === this.folder.idBranch);
+      if (!!selectedFolder)
         this.$store.commit('deleteFolderInShareList', this.$store.state.shareList.indexOf(selectedFolder));
+      else {
+        this.$store.commit('addToShareList', this.folder);
       }
     },
 
@@ -390,7 +384,7 @@ $custom-red: #ce2b2b;
     }
 
     &.btn-lock {
-      top: #{top_space(2)}px;
+      top: #{top_space(1)}px;
       background-color: white;
       color: $custom-orange;
 
@@ -412,7 +406,7 @@ $custom-red: #ce2b2b;
     }
 
     &.btn-unlock {
-      top: #{top_space(2)}px;
+      top: #{top_space(1)}px;
       background-color: white;
       color: $custom-green;
 
@@ -435,7 +429,7 @@ $custom-red: #ce2b2b;
 
 
     &.btn-delete {
-      top: #{top_space(3)}px;
+      top: #{top_space(2)}px;
       background-color: white;
       color: $custom-red;
 
@@ -465,6 +459,7 @@ $custom-red: #ce2b2b;
     }
 
     h2 {
+      user-select: none;
       margin: 0;
       padding: 0 10px;
       text-align: center;
@@ -472,6 +467,7 @@ $custom-red: #ce2b2b;
     }
 
     h3 {
+      user-select: none;
       margin: 0;
       padding: 0 10px;
       text-align: center;

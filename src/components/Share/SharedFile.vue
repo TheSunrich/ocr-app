@@ -1,9 +1,9 @@
 <template>
   <b-col sm="6" md="4" lg="3" xl="2" class="py-3">
     <b-card no-body class="btn-branch shadow-sm">
-      <blockquote class="card-blockquote" @click="showFolders">
-        <img class="btn-icon m-4" src="../../assets/img/sucursal.png" alt=""/>
-        <h2>{{ branch.name }}</h2>
+      <blockquote class="card-blockquote" @click="showFileDetail">
+        <font-awesome-icon class="btn-icon m-4" icon="fa-regular fa-file-pdf" size="4x"/>
+        <h3>{{ file }}</h3>
       </blockquote>
     </b-card>
   </b-col>
@@ -11,56 +11,41 @@
 
 <script lang="ts">
 import {defineComponent, PropType} from "vue";
-import Branch from "@/models/branch";
+import Folder from "@/models/folder";
 import {emitter} from "@/main";
+import Branch from "@/models/branch";
 
 export default defineComponent({
-  name: "BranchComponent",
+  name: "SharedFileComponent",
   props: {
-    branch: {type: Object as PropType<Branch>, required: true}
+    folder: {type: String, required: true},
+    branch: {type: Branch, required: true},
+    file: {type: String, required: true},
+    shareCode: {type: String, required: true},
   },
   data() {
-    return {
-      show: false,
-      nameState: null,
-      cityState: null,
-      stateState: null,
-      editBranch: {
-        name: this.branch.name,
-        city: this.branch.city,
-        state: this.branch.state,
-      }
-    }
+    return {}
   },
   methods: {
-    showFolders() {
-      this.$router.push({name: 'BranchFolder', params: {branch: JSON.stringify(this.branch)}})
+    showFileDetail() {
+      this.$router.push({
+        name: 'SharedFile',
+        params: {branch: JSON.stringify(this.branch), code: this.folder, file_name: this.file, shared_code: this.shareCode}
+      })
     },
-  },
-
+  }
 })
 </script>
 
 <style scoped lang="scss">
-@use 'sass:color';
-
-$custom-orange: #fd7e14;
-$custom-green: #36ce2b;
-$custom-blue: #2747bb;
-$custom-red: #ce2b2b;
 
 @function top_space($btn_num) {
   @return 33 * $btn_num - 24;
 }
 
 .btn-branch {
-  height: 100%;
   border: none;
   transition: background-color ease-in-out 0.15s;
-
-  &:has(.list-enter-to) {
-    opacity: 0;
-  }
 
   &:hover {
     background-color: rgba(44, 62, 80, 0.15);
@@ -101,60 +86,16 @@ $custom-red: #ce2b2b;
     &.btn-update {
       top: #{top_space(1)}px;
       background-color: white;
-      color: $custom-blue;
+      color: #2747bb;
 
       &:hover {
-        background-color: $custom-blue;
+        background-color: #2747bb;
         color: white;
       }
 
       &:active {
         transform: scale(105%, 105%);
-        background-color: color.adjust($custom-blue, $lightness: -15);
-        color: white;
-      }
-
-      svg {
-        display: block;
-        align-self: auto;
-      }
-    }
-
-    &.btn-lock {
-      top: #{top_space(2)}px;
-      background-color: white;
-      color: $custom-orange;
-
-      &:hover {
-        background-color: $custom-orange;
-        color: white;
-      }
-
-      &:active {
-        transform: scale(105%, 105%);
-        background-color: color.adjust($custom-orange, $lightness: -15);
-        color: white;
-      }
-
-      svg {
-        display: block;
-        align-self: auto;
-      }
-    }
-
-    &.btn-unlock {
-      top: #{top_space(2)}px;
-      background-color: white;
-      color: $custom-green;
-
-      &:hover {
-        background-color: $custom-green;
-        color: white;
-      }
-
-      &:active {
-        transform: scale(105%, 105%);
-        background-color: color.adjust($custom-green, $lightness: -15);
+        background-color: #1a2f7c;
         color: white;
       }
 
@@ -166,18 +107,40 @@ $custom-red: #ce2b2b;
 
 
     &.btn-delete {
-      top: #{top_space(3)}px;
+      top: #{top_space(2)}px;
       background-color: white;
-      color: $custom-red;
+      color: #ce2b2b;
 
       &:hover {
-        background-color: $custom-red;
+        background-color: #ce2b2b;
         color: white;
       }
 
       &:active {
         transform: scale(105%, 105%);
-        background-color: color.adjust($custom-red, $lightness: -15);
+        background-color: #8f1e1e;
+        color: white;
+      }
+
+      svg {
+        display: block;
+        align-self: auto;
+      }
+    }
+
+    &.btn-restore {
+      top: #{top_space(2)}px;
+      background-color: white;
+      color: #36ce2b;
+
+      &:hover {
+        background-color: #36ce2b;
+        color: white;
+      }
+
+      &:active {
+        transform: scale(105%, 105%);
+        background-color: #36ce2b;
         color: white;
       }
 
@@ -192,7 +155,6 @@ $custom-red: #ce2b2b;
     user-select: none;
 
     .btn-icon {
-      width: 50%;
       margin: 2.25rem !important;
     }
 
@@ -200,7 +162,14 @@ $custom-red: #ce2b2b;
       margin: 0;
       padding: 0 10px;
       text-align: center;
-      font-size: 15px;
+      font-size: 20px;
+    }
+
+    h3 {
+      margin: 0;
+      padding: 0 10px;
+      text-align: center;
+      font-size: 14px;
     }
   }
 }
