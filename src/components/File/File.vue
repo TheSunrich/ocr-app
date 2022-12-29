@@ -1,13 +1,13 @@
 <template>
   <b-col sm="6" md="4" lg="3" xl="2" class="py-3">
-    <b-card no-body class="btn-branch shadow-sm">
-      <a class="btn-action btn-update" @click="updateBranch">
+    <b-card no-body class="btn-branch shadow-sm" >
+      <a class="btn-action btn-update" v-b-modal="'modifyFile-' + file">
         <font-awesome-icon icon="fa-solid fa-pencil" size="sm"/>
       </a>
-      <a class="btn-action btn-delete" @click="deleteFile" v-if="!isDeleted">
+      <a class="btn-action btn-delete" @click="showModal('delete')" v-if="!isDeleted">
         <font-awesome-icon icon="fa-solid fa-trash" size="sm"/>
       </a>
-      <a class="btn-action btn-restore" @click="restoreFile" v-if="isDeleted">
+      <a class="btn-action btn-restore" @click="showModal('restore')" v-if="isDeleted">
         <font-awesome-icon icon="fa-solid fa-arrow-rotate-left" size="sm"/>
       </a>
       <blockquote class="card-blockquote" @click="showFileDetail">
@@ -15,6 +15,25 @@
         <h3>{{ file }}</h3>
       </blockquote>
     </b-card>
+    <b-modal
+        :id="'modifyFile-' + file"
+        title="Editar Valores"
+        header-bg-variant="blue"
+        header-text-variant="light"
+        okVariant="danger"
+        okTitle="Aceptar"
+        cancelTitle="Cancelar"
+        @show="resetForm"
+        @hidden="resetForm"
+        @ok="handleOk"
+        centered>
+      <b-form class="container-fluid" :ref="'modifyForm-'+file" @submit.stop.prevent="updateFile">
+        <b-form-group class="mb-3" label="Nombre del archivo:">
+          <b-form-input id="name" name="name" type="text" v-model.trim="editFile.name" required
+                        :state="nameState"></b-form-input>
+        </b-form-group>
+      </b-form>
+    </b-modal>
   </b-col>
 </template>
 
@@ -34,23 +53,109 @@ export default defineComponent({
     isDeleted: {type: Boolean, required: true}
   },
   data() {
-    return {}
+    return {
+      nameState: null,
+      editFile:{
+        name: ''
+      }
+    }
   },
   methods: {
+    handleOk(bvModalEvent: any) {
+      bvModalEvent.preventDefault()
+      this.updateFile()
+    },
+    resetForm() {
+      this.nameState = null;
+      this.editFile = {
+        name: this.file,
+      }
+    },
+    showModal(type: string) {
+      let msg: string = '', title: string = '', color = '';
+      switch (type) {
+        case 'delete':
+          msg = '¿Esta seguro de querer eliminar el archivo?';
+          title = 'Eliminar archivo';
+          color = 'red';
+          break;
+        case 'restore':
+          msg = '¿Esta seguro de querer restaurar el archivo?';
+          title = 'Restaurar archivo';
+          color = 'green';
+          break;
+      }
+      this.$bvModal.msgBoxConfirm(msg, {
+        title: title,
+        size: 'sm',
+        buttonSize: 'sm',
+        okVariant: 'danger',
+        okTitle: 'Aceptar',
+        headerBgVariant: color,
+        headerTextVariant: 'light',
+        cancelTitle: 'Cancelar',
+        footerClass: 'p-2',
+        hideHeaderClose: false,
+        centered: true,
+        noCloseOnEsc: true,
+        noCloseOnBackdrop: true
+      }).then(value => {
+        if (value) {
+          switch (type) {
+            case 'delete':
+              this.deleteFile();
+              break;
+            case 'restore':
+              this.restoreFile();
+              break;
+          }
+        }
+      })
+    },
     showFileDetail() {
       this.$router.push({
         name: 'File',
         params: {branch: JSON.stringify(this.branch), code: this.folder, file_name: this.file, preRoute: this.preRoute}
       })
     },
-    updateBranch() {
-      //this.axios.put(`branch/${this.branch.id}`).then().catch()
+    updateFile() {
+      let title = "Modificación de archivo"
+      let toastArgs = {}
+      this.axios.patch(`file/${this.branch.name}/${this.folder}/${this.file}`, {new_file_name: this.editFile.name}).then(response => {
+        if (response.data.hasOwnProperty('error')) {
+          emitter.emit('show-toast',{
+            title: title,
+            description: 'El archivo no se ha modificado',
+            type: 'error'
+          })
+          return;
+        } else if (response.data.hasOwnProperty('success')) {
+          toastArgs = {
+            title: title,
+            description: 'El archivo se ha modificado correctamente',
+            type: 'success'
+          }
+        }
+        emitter.emit('show-toast', toastArgs);
+        emitter.emit('file-getList',{deleted: this.isDeleted})
+      }).catch( error => {
+        emitter.emit('show-toast',{
+          title: title,
+          description: 'El archivo no se ha modificado',
+          type: 'error'
+        })
+      })
     },
     deleteFile() {
       let toastArgs = {}
       let title = "Eliminación de archivo"
       this.axios.put(`file/${this.branch.name}/${this.folder}/${this.file}/delete`).then(response => {
         if (response.data.hasOwnProperty('error')) {
+          emitter.emit('show-toast',{
+            title: title,
+            description: 'El archivo no se ha eliminado',
+            type: 'error'
+          })
           return;
         } else if (response.data.hasOwnProperty('success')) {
           toastArgs = {
@@ -61,13 +166,25 @@ export default defineComponent({
         }
         emitter.emit('show-toast', toastArgs);
         emitter.emit('file-getList',{deleted: this.isDeleted})
-      }).catch()
+      }).catch(error =>{
+        console.log(error)
+        emitter.emit('show-toast',{
+            title: title,
+            description: 'El archivo no se ha eliminado',
+            type: 'error'
+          })
+      })
     },
     restoreFile() {
       let toastArgs = {}
       let title = "Restauración de archivo"
       this.axios.put(`file/${this.branch.name}/${this.folder}/${this.file}/restore`).then(response => {
         if (response.data.hasOwnProperty('error')) {
+          emitter.emit('show-toast',{
+            title: title,
+            description: 'El archivo no se ha restaurado',
+            type: 'error'
+          })
           return;
         } else if (response.data.hasOwnProperty('success')) {
           toastArgs = {
@@ -78,7 +195,14 @@ export default defineComponent({
         }
         emitter.emit('show-toast', toastArgs);
         emitter.emit('file-getList',{deleted: this.isDeleted})
-      }).catch()
+      }).catch(error =>{
+        console.log(error)
+        emitter.emit('show-toast',{
+          title: title,
+          description: 'El archivo no se ha restaurado',
+          type: 'error'
+        })
+      })
     },
   }
 })
@@ -91,6 +215,7 @@ export default defineComponent({
 }
 
 .btn-branch {
+  height: 100%;
   border: none;
   transition: background-color ease-in-out 0.15s;
 

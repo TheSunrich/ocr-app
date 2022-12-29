@@ -31,42 +31,28 @@
         @ok="handleOk"
         centered>
       <b-form class="container-fluid" :ref="'modifyForm-'+user.id" @submit.stop.prevent="updateUser">
-        <b-form-group class="mb-3" label="Nombre:">
-          <b-form-input id="name" name="name" type="text" v-model.trim="editUser.name" disabled
-                        :state="nameState"></b-form-input>
+        <b-form-group class="mb-3" label="Nombre de usuario:">
+          <b-form-input id="username" name="username" type="text" v-model.trim="editUser.username" disabled
+                        :state="usernameState"></b-form-input>
         </b-form-group>
         <b-form-group class="mb-3" label="Sucursal: ">
-          <b-form-select name="role" id="role" v-model="editUser.idBranch.toString()" :options="branches" required
-                         value-field="id" text-field="name" :state="idBranchState">
+          <b-form-select name="branch" id="branch" v-model="user.idBranch" :options="branches" disabled
+                         value-field="id" text-field="name">
           </b-form-select>
-          <b-form-invalid-feedback>
-            El campo 'Sucursal' es requerido
-          </b-form-invalid-feedback>
+
         </b-form-group>
         <b-form-group class="mb-3" label="Nueva Contraseña: " :state="pwdState">
           <b-input-group>
-            <b-form-input id="pwd" name="pwd" :type="showPassword ? 'text' : 'password'" v-model.trim="editUser.pwd"
+            <b-form-input id="pwd" name="pwd" type='password' v-model.trim="editUser.pwd"
                           required :state="pwdState"></b-form-input>
-            <b-input-group-append>
-              <b-button @click="showPassword = !showPassword" size="sm" variant="outline-blue">
-                <font-awesome-icon :icon=" showPassword ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye'"/>
-              </b-button>
-            </b-input-group-append>
           </b-input-group>
           <b-form-invalid-feedback>
             El campo 'Nueva Contraseña' es requerido
           </b-form-invalid-feedback>
         </b-form-group>
         <b-form-group class="mb-3" label="Confirmar Contraseña: ">
-          <b-input-group>
-            <b-form-input id="pwd_2" name="pwd_2" :type="showPassword2 ? 'text' : 'password'" v-model.trim="pwd_check"
+            <b-form-input id="pwd_2" name="pwd_2" type="password" v-model.trim="pwd_check"
                           required :state="pwdState2"></b-form-input>
-            <b-input-group-append>
-              <b-button @click="showPassword2 = !showPassword2" size="sm" variant="outline-blue">
-                <font-awesome-icon :icon=" showPassword2 ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye'"/>
-              </b-button>
-            </b-input-group-append>
-          </b-input-group>
           <b-form-invalid-feedback>
             El campo 'Confirmar Contraseña' es requerido
           </b-form-invalid-feedback>
@@ -88,28 +74,24 @@ export default defineComponent({
   },
   data() {
     return {
-      showPassword: false,
-      showPassword2: false,
       show: false,
-      emailState: null,
       pwdState: null,
       pwdState2: null as boolean | null,
       roleState: null,
-      nameState: null,
-      idBranchState: null,
+      usernameState: null,
       pwd_check: '',
       editUser: {
-        email: this.user.email,
         pwd: '',
         role: this.user.role as number | null,
         name: this.user.name,
-        idBranch: this.user.idBranch,
+        username: this.user.username,
       },
       branches: []
     }
   },
   mounted() {
     this.getAllBranches()
+    console.log(this.user)
   },
   methods: {
     showUserDetail() {
@@ -117,12 +99,9 @@ export default defineComponent({
     },
     checkFormValidity() {
       const form: any = this.$refs['modifyForm-' + this.user.id];
-      this.nameState = form.name.checkValidity()
-      this.emailState = form.email.checkValidity();
+      this.usernameState = form.username.checkValidity()
       this.pwdState = form.pwd.checkValidity()
       this.pwdState2 = this.editUser.pwd !== '' && this.editUser.pwd === this.pwd_check && form.pwd_2.checkValidity()
-      this.roleState = form.role.checkValidity()
-      this.idBranchState = form.idBranch.checkValidity()
       return form.checkValidity() && this.editUser.pwd !== '' && this.editUser.pwd === this.pwd_check;
     },
     showModal(type: string) {
@@ -179,18 +158,16 @@ export default defineComponent({
       this.updateUser()
     },
     resetForm() {
-      this.emailState = null;
       this.pwdState = null;
       this.pwdState2 = null;
       this.roleState = null;
-      this.nameState = null;
+      this.usernameState = null;
       this.pwd_check = '';
       this.editUser = {
-        email: this.user.email,
         pwd: '',
         role: this.user.role,
         name: this.user.name,
-        idBranch: undefined,
+        username: this.user.username,
       }
     },
     getAllBranches() {
@@ -232,7 +209,6 @@ export default defineComponent({
               type: 'error'
             }
           }
-          this.editUser.email = this.user.email;
           this.editUser.pwd = this.user.pwd;
           this.editUser.role = this.user.role;
           this.editUser.name = this.user.name;
@@ -248,11 +224,9 @@ export default defineComponent({
         emitter.emit('show-toast', toastArgs);
         emitter.emit('user-getAll');
       }).catch(error => {
-        this.editUser.email = this.user.email;
         this.editUser.pwd = this.user.pwd;
         this.editUser.role = this.user.role;
         this.editUser.name = this.user.name;
-        this.editUser.idBranch = this.user.idBranch;
         if (error.response.data.hasOwnProperty('error')) {
           switch (error.response.data.error.code) {
             case 419:

@@ -1,6 +1,7 @@
 <template>
   <b-col sm="6" md="4" lg="3" xl="2" class="py-3">
     <b-card no-body class="btn-branch shadow-sm">
+
       <a class="btn-action btn-lock" @click="showModal('unlock')" v-if="folder.status === 2 && !deleted">
         <font-awesome-icon icon="fa-solid fa-lock" size="sm"/>
       </a>
@@ -314,6 +315,7 @@ $custom-red: #ce2b2b;
 }
 
 .btn-branch {
+  height: 100%;
   border: none;
   transition: background-color ease-in-out 0.15s;
 

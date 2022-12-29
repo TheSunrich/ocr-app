@@ -2,7 +2,7 @@ import Branch from "@/models/branch";
 
 export interface IUser {
     id: number
-    email: string
+    username: string
     pwd: string
     role: number
     name: string
@@ -13,7 +13,7 @@ export interface IUser {
 
 export class UserDTO implements IUser {
     id: number = 0
-    email: string = ''
+    username: string = ''
     pwd: string = ''
     role: number = 0
     name: string = '';

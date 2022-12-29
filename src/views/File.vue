@@ -54,10 +54,11 @@ export default defineComponent({
     emitter.emit('check-routes');
   },
   mounted() {
+    if(this.branch === undefined || this.folder === undefined){
+      this.$router.push({name: 'Folder', replace: true})
+    }
     this.$store.commit('setShareActive', false);
     this.getAll(this.isDeleted);
-    console.log(this.branch)
-    console.log(this.folder)
     emitter.on('file-getList', (args: any) => {
       this.getAll(args.deleted);
       this.isDeleted = args.deleted;
@@ -84,6 +85,7 @@ export default defineComponent({
     },
     getAll(deleted: Boolean) {
       this.axios.get(`file/${this.branch.name}/${this.folder}`).then(response => {
+        console.log(response.data)
         if (response.data.hasOwnProperty('error')) {
           if (response.data.error.code == 404) {
             emitter.emit('show-toast', {
@@ -98,6 +100,11 @@ export default defineComponent({
         this.searchFiles = deleted ? response.data.deleted : response.data.active;
       }).catch(error => {
         console.log(error);
+        emitter.emit('show-toast', {
+          title: 'Lista de archivos',
+          description: 'Error al cargar los archivos',
+          type: 'error'
+        });
       })
     },
     showActives() {

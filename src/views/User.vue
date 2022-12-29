@@ -27,61 +27,23 @@
             @ok="handleOk"
             centered>
           <b-form class="container-fluid" ref="addUser" @submit.stop.prevent="addUser">
-            <b-form-group class="mb-3" label="Nombre: ">
-              <b-form-input name="name" type="text" v-model.trim="newUser.name" required
-                            :state="nameState"></b-form-input>
-              <b-form-invalid-feedback>
-                El campo 'Nombre' es requerido
-              </b-form-invalid-feedback>
+            <b-form-group class="mb-3" label="Nombre de usuario:">
+              <b-form-input id="username" name="username" type="text" v-model.trim="newUser.username" required
+                            :state="usernameState"></b-form-input>
             </b-form-group>
-            <b-form-group class="mb-3" label="Email: ">
-              <b-form-input name="email" type="email" v-model="newUser.email" required
-                            :state="emailState"></b-form-input>
+            <b-form-group class="mb-3" label="Nueva Contraseña: " :state="pwdState">
+              <b-form-input id="pwd" name="pwd" type="password" v-model.trim="newUser.pwd"
+                            required :state="pwdState"></b-form-input>
               <b-form-invalid-feedback>
-                El campo 'Email' es requerido
+                El campo 'Nueva Contraseña' es requerido
               </b-form-invalid-feedback>
-            </b-form-group>
-            <b-form-group class="mb-3" label="Rol: ">
-              <b-form-select name="role" id="role" v-model="newUser.role" required :state="roleState">
-                <b-form-select-option :value="1">1</b-form-select-option>
-                <b-form-select-option :value="2">2</b-form-select-option>
-                <b-form-select-option :value="3">3</b-form-select-option>
-              </b-form-select>
-              <b-form-invalid-feedback>
-                El campo 'Rol' es requerido
-              </b-form-invalid-feedback>
-            </b-form-group>
-            <b-form-group class="mb-3" label="Sucursal: " v-if="newUser.role !== 1 && newUser.role !== null">
-              <b-form-select name="role" id="role" v-model="newUser.idBranch" required :state="idBranchState">
-                <b-form-select-option :value="1">1</b-form-select-option>
-                <b-form-select-option :value="2">2</b-form-select-option>
-                <b-form-select-option :value="3">3</b-form-select-option>
-              </b-form-select>
-              <b-form-invalid-feedback>
-                El campo 'Sucursal' es requerido
-              </b-form-invalid-feedback>
-            </b-form-group>
-            <b-form-group class="mb-3" label="Contraseña: ">
-              <b-input-group>
-                <b-form-input name="pwd" :type="showPassword ? 'text' : 'password'" v-model.trim="newUser.pwd"
-                              required :state="pwdState"></b-form-input>
-                <b-input-group-append>
-                  <b-button @click="showPassword = !showPassword" size="sm" variant="outline-blue">
-                    <font-awesome-icon :icon=" showPassword ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye'"/>
-                  </b-button>
-                </b-input-group-append>
-              </b-input-group>
             </b-form-group>
             <b-form-group class="mb-3" label="Confirmar Contraseña: ">
-              <b-input-group>
-                <b-form-input name="pwd_2" :type="showPassword2 ? 'text' : 'password'" v-model.trim="pwd_check"
-                              required :state="pwdState2"></b-form-input>
-                <b-input-group-append>
-                  <b-button @click="showPassword2 = !showPassword2" size="sm" variant="outline-blue">
-                    <font-awesome-icon :icon=" showPassword2 ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye'"/>
-                  </b-button>
-                </b-input-group-append>
-              </b-input-group>
+              <b-form-input id="pwd_2" name="pwd_2" type="password" v-model.trim="pwd_check"
+                            required :state="pwdState2"></b-form-input>
+              <b-form-invalid-feedback>
+                El campo 'Confirmar Contraseña' es requerido
+              </b-form-invalid-feedback>
             </b-form-group>
           </b-form>
         </b-modal>
@@ -106,25 +68,17 @@ export default defineComponent({
   },
   data() {
     return {
-      showPassword: false,
-      showPassword2: false,
       txtSearch: '',
       users: [] as User[],
       searchUsers: [] as User[],
-      emailState: null,
       pwdState: null,
       pwdState2: null as boolean | null,
-      roleState: null,
-      nameState: null,
-      idBranchState: null,
+      usernameState: null,
       pwd_check: '',
       newUser: {
-        email: '',
+        username: '',
         pwd: '',
-        role: null as number | null,
-        name: '',
-        idBranch: null,
-      }
+      },
     }
   },
   created() {
@@ -137,12 +91,9 @@ export default defineComponent({
   methods: {
     checkFormValidity() {
       const form: any = this.$refs['addUser'];
-      this.nameState = form.name.checkValidity()
-      this.emailState = form.email.checkValidity();
+      this.usernameState = form.username.checkValidity()
       this.pwdState = form.pwd.checkValidity()
       this.pwdState2 = this.newUser.pwd !== '' && this.newUser.pwd === this.pwd_check && form.pwd_2.checkValidity()
-      this.roleState = form.role.checkValidity()
-      this.idBranchState = form.idBranch.checkValidity()
       return form.checkValidity() && this.newUser.pwd !== '' && this.newUser.pwd === this.pwd_check;
     },
     handleOk(bvModalEvent: any) {
@@ -163,18 +114,13 @@ export default defineComponent({
       this.searchUsers = filteredUser
     },
     emptyForm() {
-      this.emailState = null;
       this.pwdState = null;
       this.pwdState2 = null as boolean | null;
-      this.roleState = null;
-      this.nameState = null;
-      this.idBranchState = null;
+      this.usernameState = null;
+      this.pwd_check = '';
       this.newUser = {
-        email: '',
         pwd: '',
-        role: null,
-        name: '',
-        idBranch: null,
+        username: '',
       }
     },
     getAll() {
@@ -203,6 +149,7 @@ export default defineComponent({
       const title = 'Agregar Nuevo Usuario';
       let toastArgs = {};
       this.axios.post('user', this.newUser).then(response => {
+        emitter.emit('user-getAll');
         if (response.data.hasOwnProperty('error')) {
           toastArgs = {
             title: title,
@@ -219,7 +166,6 @@ export default defineComponent({
           }
         }
         emitter.emit('show-toast', toastArgs);
-        emitter.emit('user-getAll');
       }).catch(error => {
         if (error.response.data.hasOwnProperty('error')) {
           switch (error.response.data.error.code) {
@@ -228,6 +174,20 @@ export default defineComponent({
                 title: title,
                 description: 'El usuario no ha podido ser agregado',
                 type: 'error'
+              }
+              break;
+            case 434:
+              toastArgs = {
+                title: title,
+                description: 'El usuario no está registrado',
+                type: 'error'
+              }
+              break;
+            case 437:
+              toastArgs = {
+                title: title,
+                description: 'El usuario ya fue agreagado anteriormente',
+                type: 'warning'
               }
               break;
             case 0:
@@ -240,6 +200,13 @@ export default defineComponent({
               break;
           }
           emitter.emit('show-toast', toastArgs);
+        } else {
+          emitter.emit('show-toast', {
+            title: title,
+            description: 'Ha surgido un error inesperado',
+            type: 'error'
+          });
+
         }
       }).finally(() => {
         this.emptyForm()

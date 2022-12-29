@@ -2,7 +2,7 @@
   <b-col sm="6" md="4" lg="3" xl="2" class="py-3">
     <b-card no-body class="btn-branch shadow-sm">
       <blockquote class="card-blockquote" @click="showFolders">
-        <img class="btn-icon m-4" src="../../assets/img/sucursal.png" alt=""/>
+        <img class="btn-icon m-4" :src="require('../../assets/img/sucursal.png')" alt=""/>
         <h2>{{ branch.name }}</h2>
       </blockquote>
     </b-card>

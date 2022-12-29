@@ -14,7 +14,7 @@
       </b-col>
     </TransitionGroup>
     <b-row class="share-form px-3">
-      <b-col cols="12" class="d-flex align-items-center">
+      <!--<b-col cols="12" class="d-flex align-items-center">
         <b-form-checkbox id="isPwd" v-model="isPwd" name="isPwd" class="d-inline-block"/>
         <b-form-input v-model="pwd" placeholder="Contraseña" class="d-inline-block" :disabled="!isPwd"></b-form-input>
       </b-col>
@@ -23,7 +23,7 @@
         <b-form-datepicker v-model="date" class="text-left"
                            :date-format-options="{ year: 'numeric', month: 'numeric', day: 'numeric' }"
                            :disabled="!isDate" placeholder="Vencimiento" style="user-select: none"/>
-      </b-col>
+      </b-col>-->
       <b-col cols="12">
         <b-button class="mt-2" @click="shareFolders" variant="primary" block pill :disabled="folderList.length <= 0">Compartir</b-button>
       </b-col>
@@ -104,15 +104,14 @@ export default defineComponent({
           }
         }
         emitter.emit('show-toast', toastArgs);
-        this.shareFoldersModal()
+        this.shareFoldersModal(response.data.data.id)
         this.$store.commit('emptyShareList');
         this.$store.commit('toggleShareActive');
       })
     },
-    shareFoldersModal() {
-      this.$bvModal.msgBoxOk('Las carpetas han sido compartidas correctamente\nse ha generado un link: https://abc.com/a', {
+    shareFoldersModal(code: string) {
+      this.$bvModal.msgBoxOk(`Las carpetas han sido compartidas correctamente, se ha generado un link: http://192.168.100.60:8080/shared/${code}`, {
         title: 'Compartir Carpetas',
-        size: 'sm',
         buttonSize: 'sm',
         okVariant: 'success',
         headerClass: 'p-2 border-bottom-0',
@@ -181,7 +180,7 @@ export default defineComponent({
   .share-list {
     display: block;
     overflow: auto;
-    margin-bottom: 150px;
+    margin-bottom: 60px;
     height: 100%;
     padding: 10px 15px;
   }
@@ -190,7 +189,7 @@ export default defineComponent({
     position: fixed;
     bottom: 0;
     right: 0;
-    height: 150px;
+    height: 60px;
     width: 275px;
     margin: 0;
   }
