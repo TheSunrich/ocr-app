@@ -9,7 +9,7 @@
       </b-col>
     </b-row>
     <b-row>
-      <b-col md="6" lg="7" class="p-3" order="2" order-md="1">
+      <b-col md="6" lg="7" class="p-3 pdf-container" order="2" order-md="1">
         <b-row class="pdf-viewer shadow">
           <b-col cols="12" class="mb-2">
             <b-button-group>
@@ -19,7 +19,13 @@
               <b-button @click="scaleIncrement" :disabled="scale >= 15">
                 <font-awesome-icon icon="fa-solid fa-magnifying-glass-plus"/>
               </b-button>
-              <b-button @click="downloadFile">Descargar</b-button>
+              <b-button @click="" :disabled="scale >= 15">
+                <font-awesome-icon icon="fa-solid fa-arrow-left"/>
+              </b-button>
+              <b-button @click="" :disabled="scale >= 15">
+                <font-awesome-icon icon="fa-solid fa-arrow-right"/>
+              </b-button>
+              <b-button variant="dark-green" @click="downloadFile">Descargar</b-button>
             </b-button-group>
           </b-col>
           <b-col cols="12">
@@ -66,7 +72,9 @@ export default defineComponent({
     branch: {type: Branch, required: true},
     code: {type: String, required: true},
     file_name: {type: String, required: true},
-    preRoute: {type: String, required: true}
+    preRoute: {type: String, required: true},
+    next: {type: String},
+    previous: {type: String},
   },
   data() {
     return {
@@ -151,8 +159,11 @@ export default defineComponent({
       link.download = this.file_name;
       link.click();
     },
-    returnToFileList(){
-      this.$router.replace({name: 'FolderFiles', params: {branch: JSON.stringify(this.branch), folder: this.code, preRoute: this.preRoute}});
+    returnToFileList() {
+      this.$router.replace({
+        name: 'FolderFiles',
+        params: {branch: JSON.stringify(this.branch), folder: this.code, preRoute: this.preRoute}
+      });
     }
   }
 })
@@ -169,10 +180,15 @@ export default defineComponent({
   @return ($i + 3)/4;
 }
 
-.pdf-viewer {
-  padding: 15px;
-  border-radius: 15px;
-  background-color: white;
+.pdf-container {
+  padding-left: 32px !important;
+  padding-right: 32px !important;
+
+  .pdf-viewer {
+    padding: 15px;
+    border-radius: 15px;
+    background-color: white;
+  }
 }
 
 .nav-title {

@@ -199,7 +199,7 @@ export default defineComponent({
           if (response.data.error.code === 416) {
             toastArgs = {
               title: title,
-              description: 'La información de al usuario es idéntica, no ha habido cambios',
+              description: 'La información del usuario es idéntica, no ha habido cambios',
               type: 'warning'
             }
           } else {

@@ -24,7 +24,7 @@ import {
     faPlay, faChartColumn, faComputer, faPeopleLine,
     faCodeBranch, faFolder, faFolderTree, faFolderOpen, faUsers, faShareAlt, faUser,
     faShare, faShareNodes, faLink, faMagnifyingGlassMinus, faMagnifyingGlassPlus,
-    faArrowRotateLeft, faEye, faEyeSlash,
+    faArrowRotateLeft, faEye, faEyeSlash, faArrowRight, faArrowLeft,
 } from '@fortawesome/free-solid-svg-icons'
 import {faBuilding, faFilePdf} from '@fortawesome/free-regular-svg-icons'
 
@@ -71,6 +71,8 @@ library.add(
     faMagnifyingGlassPlus,
     faFilePdf,
     faArrowRotateLeft,
+    faArrowRight,
+    faArrowLeft,
     faUser
 )
 

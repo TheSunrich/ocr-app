@@ -5,6 +5,7 @@ $custom-orange: #fd7e14;
 $custom-green: #36ce2b;
 $custom-blue: #2747bb;
 $custom-red: #ce2b2b;
+$custom-dark-green: #148b4b;
 
 
 $color-list: () !default;
@@ -13,7 +14,8 @@ $color-list: map-merge(
     'red': $custom-red,
     'blue': $custom-blue,
     'orange': $custom-orange,
-    'green': $custom-green
+    'green': $custom-green,
+    'dark-green': $custom-dark-green
   ),
   $color-list
 );

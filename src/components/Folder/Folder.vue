@@ -1,7 +1,9 @@
 <template>
   <b-col sm="6" md="4" lg="3" xl="2" class="py-3">
     <b-card no-body class="btn-branch shadow-sm">
-
+      <a class="btn-action btn-update" v-b-modal="'modifyFolder-' + folder.idBranch + folder.name" v-if="!deleted">
+        <font-awesome-icon icon="fa-solid fa-pencil" size="sm"/>
+      </a>
       <a class="btn-action btn-lock" @click="showModal('unlock')" v-if="folder.status === 2 && !deleted">
         <font-awesome-icon icon="fa-solid fa-lock" size="sm"/>
       </a>
@@ -16,9 +18,28 @@
       <blockquote class="card-blockquote" @click="whenActivate">
         <font-awesome-icon class="btn-icon m-4" icon="fa-solid fa-folder" size="4x"/>
         <h2>{{ folder.name }}</h2>
-        <h3 v-if="$route.name === 'Folder'">{{ folder.branch.name }} </h3>
+        <h3 v-if="!deleted">{{ folder.branch.name }} </h3>
       </blockquote>
     </b-card>
+    <b-modal
+        :id="'modifyFolder-' + folder.idBranch + folder.name"
+        title="Editar Valores"
+        header-bg-variant="blue"
+        header-text-variant="light"
+        okVariant="danger"
+        okTitle="Aceptar"
+        cancelTitle="Cancelar"
+        @show="resetForm"
+        @hidden="resetForm"
+        @ok="handleOk"
+        centered>
+      <b-form class="container-fluid" :ref="'modifyFolder-' + folder.idBranch + folder.name" @submit.stop.prevent="updateFolder">
+        <b-form-group class="mb-3" label="Nombre de usuario:">
+          <b-form-input id="name" name="name" type="text" v-model.trim="editFolder.new_name" required
+                        :state="nameState"></b-form-input>
+        </b-form-group>
+      </b-form>
+    </b-modal>
   </b-col>
 </template>
 
@@ -33,6 +54,14 @@ export default defineComponent({
     folder: {type: Object as PropType<Folder>, required: true},
     deleted: {type: Boolean, default: false},
   },
+  data(){
+    return {
+      nameState: null,
+      editFolder: {
+        new_name: this.folder.name,
+      }
+    }
+  },
   computed: {
     checked: {
       get(): boolean {
@@ -44,6 +73,104 @@ export default defineComponent({
     }
   },
   methods: {
+    checkFormValidity() {
+      const form: any = this.$refs['modifyFolder-' + this.folder.idBranch + this.folder.name];
+      this.nameState = form.name.checkValidity()
+      return form.checkValidity();
+    },
+    updateFolder(){
+      if (!this.checkFormValidity()) {
+        return
+      }
+
+      const title = 'Modificación de usuario';
+      let toastArgs = {};
+      this.axios.put(`folder/${this.folder.idBranch}/${this.folder.name}`, this.editFolder).then(response => {
+        if (response.data.hasOwnProperty('error')) {
+          if (response.data.error.code === 416) {
+            toastArgs = {
+              title: title,
+              description: 'La información de al usuario es idéntica, no ha habido cambios',
+              type: 'warning'
+            }
+          } else {
+            toastArgs = {
+              title: title,
+              description: 'Ha ocurrido un error inesperado',
+              type: 'error'
+            }
+          }
+          this.editFolder.new_name = this.folder.name;
+          emitter.emit('show-toast', toastArgs);
+          return;
+        } else if (response.data.hasOwnProperty('success')) {
+          toastArgs = {
+            title: title,
+            description: 'El usuario se ha modificado correctamente',
+            type: 'success'
+          }
+        }
+        emitter.emit('show-toast', toastArgs);
+        emitter.emit('folder-getList');
+      }).catch(error => {
+        console.log(error)
+        this.editFolder.new_name = this.folder.name;
+        if(error.response.hasOwnProperty('data')){
+          emitter.emit('show-toast', toastArgs = {
+            title: title,
+            description: 'El usuario no ha podido ser modificado',
+            type: 'error'
+          });
+          return;
+        }
+        if (error.response.data.hasOwnProperty('error')) {
+          switch (error.response.data.error.code) {
+            case 419:
+              toastArgs = {
+                title: title,
+                description: 'El usuario ya ha sido eliminado y no hay permisos para modificar al usuario',
+                type: 'error'
+              }
+              break;
+            case 410:
+              toastArgs = {
+                title: title,
+                description: 'El usuario no ha podido ser modificado',
+                type: 'error'
+              }
+              break;
+            case 414:
+              toastArgs = {
+                title: title,
+                description: 'El usuario no existe',
+                type: 'warning'
+              }
+              break;
+            case 0:
+            default:
+              toastArgs = {
+                title: title,
+                description: 'Ha surgido un error inesperado',
+                type: 'error'
+              }
+              break;
+          }
+          emitter.emit('show-toast', toastArgs);
+        }
+      }).finally(() => {
+        this.$bvModal.hide('modifyFolder-' + this.folder.idBranch + this.folder.name)
+      })
+    },
+    handleOk(bvModalEvent: any) {
+      bvModalEvent.preventDefault()
+      this.updateFolder()
+    },
+    resetForm() {
+      this.nameState = null;
+      this.editFolder = {
+        new_name: this.folder.name,
+      }
+    },
     whenActivate() {
       if (this.$store.state.isShareActive) {
         this.checked = !this.checked;
@@ -386,7 +513,7 @@ $custom-red: #ce2b2b;
     }
 
     &.btn-lock {
-      top: #{top_space(1)}px;
+      top: #{top_space(2)}px;
       background-color: white;
       color: $custom-orange;
 
@@ -408,7 +535,7 @@ $custom-red: #ce2b2b;
     }
 
     &.btn-unlock {
-      top: #{top_space(1)}px;
+      top: #{top_space(2)}px;
       background-color: white;
       color: $custom-green;
 
@@ -431,7 +558,7 @@ $custom-red: #ce2b2b;
 
 
     &.btn-delete {
-      top: #{top_space(2)}px;
+      top: #{top_space(3)}px;
       background-color: white;
       color: $custom-red;
 
