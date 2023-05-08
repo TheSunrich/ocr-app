@@ -31,6 +31,9 @@
               <b-form-input id="username" name="username" type="text" v-model.trim="newUser.username" required
                             :state="usernameState"></b-form-input>
             </b-form-group>
+            <b-form-group class="mb-3" label="Rol:">
+              <b-form-select name="role" v-model="newUser.role" :options="options" required :state="roleState"/>
+            </b-form-group>
             <b-form-group class="mb-3" label="Nueva Contraseña: " :state="pwdState">
               <b-form-input id="pwd" name="pwd" type="password" v-model.trim="newUser.pwd"
                             required :state="pwdState"></b-form-input>
@@ -49,9 +52,19 @@
         </b-modal>
       </b-col>
     </b-row>
+    <Transition name="list" tag="div" class="row" mode="out-in">
+      <b-spinner style="margin: 15px; width: 3rem; height: 3rem;" label="Spinning" v-if="searchUsers.length <= 0 && !afterResult"></b-spinner>
+    </Transition>
     <TransitionGroup name="list" tag="div" class="row" mode="out-in">
       <UserComponent v-for="user of searchUsers" :key="user.id" :user="user"/>
     </TransitionGroup>
+    <transition name="fade-no-content">
+      <b-row class="my-5" v-if="searchUsers.length <= 0 && afterResult">
+        <b-col>
+          <h2 class="no-content">No se han encontrado usuarios</h2>
+        </b-col>
+      </b-row>
+    </transition>
   </b-container>
 </template>
 
@@ -68,16 +81,24 @@ export default defineComponent({
   },
   data() {
     return {
+      afterResult: false,
       txtSearch: '',
       users: [] as User[],
       searchUsers: [] as User[],
       pwdState: null,
       pwdState2: null as boolean | null,
       usernameState: null,
+      roleState: null,
       pwd_check: '',
+      options: [
+        { value: null, text: 'Seleccione un rol' },
+        { value: 1, text: 'Administrador' },
+        { value: 2, text: 'Supervisor' },
+      ],
       newUser: {
         username: '',
         pwd: '',
+        role: null,
       },
     }
   },
@@ -93,6 +114,7 @@ export default defineComponent({
       const form: any = this.$refs['addUser'];
       this.usernameState = form.username.checkValidity()
       this.pwdState = form.pwd.checkValidity()
+      this.roleState = form.role.checkValidity()
       this.pwdState2 = this.newUser.pwd !== '' && this.newUser.pwd === this.pwd_check && form.pwd_2.checkValidity()
       return form.checkValidity() && this.newUser.pwd !== '' && this.newUser.pwd === this.pwd_check;
     },
@@ -117,10 +139,12 @@ export default defineComponent({
       this.pwdState = null;
       this.pwdState2 = null as boolean | null;
       this.usernameState = null;
+      this.roleState = null;
       this.pwd_check = '';
       this.newUser = {
         pwd: '',
         username: '',
+        role: null
       }
     },
     getAll() {
@@ -139,6 +163,8 @@ export default defineComponent({
         this.searchUsers = response.data;
       }).catch(error => {
         console.log(error);
+      }).finally(() =>{
+        this.afterResult = true
       })
     },
     addUser() {
@@ -242,6 +268,19 @@ export default defineComponent({
   position: absolute;
   top: 0;
   transform: translateX(200%);
+}
+
+.fade-no-content-enter-active {
+  transition: opacity 0.4s;
+}
+
+.fade-no-content-leave-active {
+  transition: opacity 0.1s;
+}
+
+.fade-no-content-enter,
+.fade-no-content-leave-to {
+  opacity: 0;
 }
 
 .form-control.search-bar {

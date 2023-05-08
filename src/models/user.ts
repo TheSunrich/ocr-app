@@ -1,4 +1,5 @@
 import Branch from "@/models/branch";
+import Client from "@/models/client";
 
 export interface IUser {
     id: number
@@ -9,6 +10,8 @@ export interface IUser {
     status: number
     idBranch?: number
     branch?: Branch
+    idClient?: number
+    client?: Client
 }
 
 export class UserDTO implements IUser {

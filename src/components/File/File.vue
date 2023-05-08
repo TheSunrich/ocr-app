@@ -1,17 +1,18 @@
 <template>
   <b-col sm="6" md="4" lg="3" xl="2" class="py-3">
-    <b-card no-body class="btn-branch shadow-sm" >
-      <a class="btn-action btn-update" v-b-modal="'modifyFile-' + file">
+    <b-card :key="cardKey" no-body  class="btn-branch shadow-sm" v-bind:img-src="`${axios.defaults.baseURL}file/${this.branch.name}/${this.folder}/${this.file}?is_thumbnail=true`" img-top>
+      <b-spinner class="charge" style="margin: 25% 41%; width: 2rem; height: 2rem;" label="Spinning"></b-spinner>
+      <a class="btn-action btn-update" v-b-modal="'modifyFile-' + file" v-if="$store.state.user.idClient === null">
         <font-awesome-icon icon="fa-solid fa-pencil" size="sm"/>
       </a>
-      <a class="btn-action btn-delete" @click="showModal('delete')" v-if="!isDeleted">
+      <a class="btn-action btn-delete" @click="showModal('delete')" v-if="!isDeleted && $store.state.user.idClient === null">
         <font-awesome-icon icon="fa-solid fa-trash" size="sm"/>
       </a>
-      <a class="btn-action btn-restore" @click="showModal('restore')" v-if="isDeleted">
+      <a class="btn-action btn-restore" @click="showModal('restore')" v-if="isDeleted && $store.state.user.idClient === null">
         <font-awesome-icon icon="fa-solid fa-arrow-rotate-left" size="sm"/>
       </a>
       <blockquote class="card-blockquote" @click="showFileDetail">
-        <font-awesome-icon class="btn-icon m-4" icon="fa-regular fa-file-pdf" size="4x"/>
+        <!--font-awesome-icon class="btn-icon m-4" icon="fa-regular fa-file-pdf" size="4x"/-->
         <h3>{{ file }}</h3>
       </blockquote>
     </b-card>
@@ -38,8 +39,7 @@
 </template>
 
 <script lang="ts">
-import {defineComponent, PropType} from "vue";
-import Folder from "@/models/folder";
+import {defineComponent} from "vue";
 import {emitter} from "@/main";
 import Branch from "@/models/branch";
 
@@ -57,7 +57,8 @@ export default defineComponent({
       nameState: null,
       editFile:{
         name: ''
-      }
+      },
+      cardKey: Date.now()
     }
   },
   methods: {
@@ -210,6 +211,18 @@ export default defineComponent({
 
 <style scoped lang="scss">
 
+.card-img-top{
+  z-index: 1;
+}
+
+.charge{
+  z-index: 0;
+  display: flex;
+  position: absolute;
+  justify-content: center;
+  align-items: center;
+}
+
 @function top_space($btn_num) {
   @return 33 * $btn_num - 24;
 }
@@ -243,8 +256,18 @@ export default defineComponent({
     background-color: rgba(44, 62, 80, 0.45);
   }
 
+  .card-img, .card-img-top {
+    height: 125px;
+    object-fit: cover;
+    object-position: top;
+  }
+
+  .card-blockquote{
+    padding-top: 20px;
+  }
 
   .btn-action {
+    z-index: 2;
     transition: background-color ease-in-out 0.25s, color ease-in-out 0.25s, transform ease-in-out 0.05s;
     display: flex;
     position: absolute;

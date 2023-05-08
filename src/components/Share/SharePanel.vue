@@ -110,7 +110,7 @@ export default defineComponent({
       })
     },
     shareFoldersModal(code: string) {
-      this.$bvModal.msgBoxOk(`Las carpetas han sido compartidas correctamente, se ha generado un link: http://192.168.100.60:8080/shared/${code}`, {
+      this.$bvModal.msgBoxOk(`Las carpetas han sido compartidas correctamente, se ha generado un link: http://172.16.100.23:8000/shared/${code}`, {
         title: 'Compartir Carpetas',
         buttonSize: 'sm',
         okVariant: 'success',

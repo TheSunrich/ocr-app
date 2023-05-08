@@ -15,7 +15,8 @@
       </b-col>
     </b-row>
     <TransitionGroup name="list" tag="div" class="row" mode="out-in">
-      <FolderComponent :folder="folderFile" :deleted="true" v-if="!isDeleted" :key="folder"/>
+      <FolderComponent :folder="folderFile" :deleted="true" v-if="!isDeleted && $store.state.user.idClient === null"
+                       :key="folder"/>
       <FileComponent v-for="file in searchFiles" :key="file" :file="file" :branch="branch" :folder="folder"
                      :pre-route="preRoute" :isDeleted="isDeleted"/>
     </TransitionGroup>
@@ -36,7 +37,9 @@ export default defineComponent({
     branch: {type: Branch, required: true},
     folder: {type: String, required: true},
     deleted: {type: Boolean, default: false},
-    preRoute: {type: String, required: true}
+    preRoute: {type: String, required: true},
+    dateInit: {type: String, default: ''},
+    dateEnd: {type: String, default: ''},
   },
   components: {
     FolderComponent,
@@ -54,7 +57,7 @@ export default defineComponent({
     emitter.emit('check-routes');
   },
   mounted() {
-    if(this.branch === undefined || this.folder === undefined){
+    if (this.branch === undefined || this.folder === undefined) {
       this.$router.push({name: 'Folder', replace: true})
     }
     this.$store.commit('setShareActive', false);
@@ -66,7 +69,7 @@ export default defineComponent({
   },
   computed: {
     folderFile(): Folder {
-      return new Folder({name: 'Eliminado', status: 1, branch: this.branch})
+      return new Folder({name: 'Eliminado', status: 1, branch: this.branch, datetime: Date.now().toString()})
     }
   },
   methods: {
@@ -111,7 +114,11 @@ export default defineComponent({
       emitter.emit('file-getList', {deleted: false})
     },
     returnToFolder() {
-      this.$router.push({name: this.preRoute, params: {branch: JSON.stringify(this.branch)}, replace: true})
+      this.$router.push({
+        name: this.preRoute,
+        params: {branch: JSON.stringify(this.branch), dateInit: this.dateInit, dateEnd: this.dateEnd},
+        replace: true
+      })
     },
   },
 })

@@ -1,16 +1,16 @@
 <template>
   <b-col sm="6" md="4" lg="3" xl="2" class="py-3">
     <b-card no-body class="btn-branch shadow-sm">
-      <a class="btn-action btn-update" v-b-modal="'modifyFolder-' + folder.idBranch + folder.name" v-if="!deleted">
+      <a class="btn-action btn-update" v-b-modal="'modifyFolder-' + folder.idBranch + folder.name" v-if="!deleted && $store.state.user.idClient === null">
         <font-awesome-icon icon="fa-solid fa-pencil" size="sm"/>
       </a>
-      <a class="btn-action btn-lock" @click="showModal('unlock')" v-if="folder.status === 2 && !deleted">
+      <a class="btn-action btn-lock" @click="showModal('unlock')" v-if="folder.status === 2 && !deleted && $store.state.user.idClient === null">
         <font-awesome-icon icon="fa-solid fa-lock" size="sm"/>
       </a>
-      <a class="btn-action btn-unlock" @click="showModal('lock')" v-else-if="folder.status === 1 && !deleted">
+      <a class="btn-action btn-unlock" @click="showModal('lock')" v-if="folder.status === 1 && !deleted && $store.state.user.idClient === null">
         <font-awesome-icon icon="fa-solid fa-lock-open" size="xs"/>
       </a>
-      <a class="btn-action btn-delete" @click="showModal('delete')" v-if="!deleted">
+      <a class="btn-action btn-delete" @click="showModal('delete')" v-if="!deleted && $store.state.user.idClient === null">
         <font-awesome-icon icon="fa-solid fa-trash" size="sm"/>
       </a>
       <b-form-checkbox v-bind:checked="checked" class="folder-checkbox" v-if="$store.state.isShareActive"
@@ -53,6 +53,8 @@ export default defineComponent({
   props: {
     folder: {type: Object as PropType<Folder>, required: true},
     deleted: {type: Boolean, default: false},
+    dateInit: {type: String, default: ''},
+    dateEnd: {type: String, default: ''}
   },
   data(){
     return {
@@ -190,7 +192,9 @@ export default defineComponent({
           branch: JSON.stringify(this.folder.branch),
           folder: String(this.folder.name),
           deleted: String(this.deleted),
-          preRoute: String(this.$route.name)
+          preRoute: String(this.$route.name),
+          dateInit: this.dateInit,
+          dateEnd: this.dateEnd
         }
       })
     },

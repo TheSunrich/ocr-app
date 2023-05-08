@@ -12,8 +12,9 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
     state: {
-        user: false as User | boolean,
-        token: false as string | boolean,
+        user: false as User | null | boolean,
+        token: false as string | null | boolean,
+
         collapsed: false,
         isShareActive: false,
         shareList: [] as Folder[]

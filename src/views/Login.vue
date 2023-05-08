@@ -56,10 +56,10 @@ export default defineComponent({
   },
   mounted() {
     if (this.$store.state.user && this.$store.state.token) {
-      if (this.$store.state.user.role === 1) {
-        this.$router.push('/branch');
-      } else {
+      if (this.$store.state.user.role === 1 && this.$store.state.user.idClient !== null) {
         this.$router.push('/folder');
+      } else {
+        this.$router.push('/branch');
       }
     }
   },
@@ -83,7 +83,9 @@ export default defineComponent({
         });
         this.$store.commit('setToken', response.data.info.token);
         this.$store.commit('setUser', response.data.info.user);
-        if (this.$store.state.user.role === 1) {
+        if (this.$store.state.user.idClient !== null) {
+          this.$router.push('/folder');
+        } else if (this.$store.state.user.role === 1) {
           this.$router.push('/branch');
         } else if (this.$store.state.user.role === 2) {
           this.$router.push('/folder');

@@ -11,9 +11,19 @@
                       @update="search"></b-form-input>
       </b-col>
     </b-row>
+    <Transition name="list" tag="div" class="row" mode="out-in">
+      <b-spinner style="margin: 15px; width: 3rem; height: 3rem;" label="Spinning" v-if="searchBranches.length <= 0 && !afterResult"></b-spinner>
+    </Transition>
     <TransitionGroup name="list" tag="div" class="row" mode="out-in">
       <BranchComponent v-for="branch of searchBranches" :key="branch.id" :branch="branch"/>
     </TransitionGroup>
+    <transition name="fade-no-content">
+      <b-row class="my-5" v-if="searchBranches.length <= 0 && afterResult">
+        <b-col>
+          <h2 class="no-content">No se han encontrado sucursales</h2>
+        </b-col>
+      </b-row>
+    </transition>
   </b-container>
 </template>
 
@@ -30,6 +40,7 @@ export default defineComponent({
   },
   data() {
     return {
+      afterResult: false,
       txtSearch: '',
       branches: [] as Branch[],
       searchBranches: [] as Branch[],
@@ -92,6 +103,8 @@ export default defineComponent({
         this.searchBranches = response.data;
       }).catch(error => {
         console.log(error);
+      }).finally(() => {
+        this.afterResult = true;
       })
     },
     emptyForm() {
@@ -161,6 +174,19 @@ export default defineComponent({
 
 
 <style scoped lang="scss">
+
+.fade-no-content-enter-active {
+  transition: opacity 0.4s;
+}
+
+.fade-no-content-leave-active {
+  transition: opacity 0.1s;
+}
+
+.fade-no-content-enter,
+.fade-no-content-leave-to {
+  opacity: 0;
+}
 
 .list-move,
 .list-enter-active,

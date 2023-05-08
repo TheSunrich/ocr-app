@@ -1,13 +1,14 @@
 <template>
   <div id="app">
-    <Sidebar v-if="($route.name !== 'SharedFolders' && $route.name !== 'SharedFolderFiles' && $route.name !== 'SharedFile' && $store.state.user !== false) || ($route.path.substring($route.path.length - 6) !== '/login' && $store.state.user.role === 1)" />
+    <Sidebar
+        v-if="($route.name !== 'SharedFolders' && $route.name !== 'SharedFolderFiles' && $route.name !== 'SharedFile' && $store.state.user !== false) || ($route.path.substring($route.path.length - 6) !== '/login' && $store.state.user.role === 1)"/>
     <div class="app_container" :style="{marginLeft: getSidebarWidth, marginRight: getShareWidth}">
-      <Navbar v-if="$route.path.substring($route.path.length - 6) !== '/login' && $store.state.user" />
+      <Navbar v-if="$route.path.substring($route.path.length - 6) !== '/login' && $store.state.user"/>
       <transition name="fade" mode="out-in">
-        <router-view :key="$route.name" />
+        <router-view :key="$route.name"/>
       </transition>
     </div>
-    <SharePanel />
+    <SharePanel/>
   </div>
 </template>
 
@@ -26,6 +27,10 @@ const SHARE_WIDTH_COLLAPSED = 0;
 
 export default defineComponent({
   components: {Navbar, Sidebar, SharePanel},
+  props:{
+    dateInit: {type:String, default:''},
+    dateEnd: {type:String, default:''},
+  },
   created() {
     this.correctRouting()
   },
@@ -83,19 +88,20 @@ export default defineComponent({
       }
 
       if (this.$store.state.user.role === 2) {
-        if (this.$route.name === 'Branch' || this.$route.path === 'User') {
-          this.$router.push({name: 'UserFolder', replace: true});
+        if (this.$route.name === 'Company' || this.$route.name === 'Companies' || this.$route.name === 'User') {
+          this.$router.push({name: 'UserFolder',params: {dateInit: this.dateInit, dateEnd: this.dateEnd}, replace: true});
         }
       }
 
       if (!items.includes(this.$route.name) || (this.$route.name === 'Login' && this.$store.state.user !== false)) {
-        if (this.$store.state.user.role === 1) {
+        if (this.$store.state.user.idClient !== null) {
+          this.$router.push({name: 'Folder', replace: true});
+        } else if (this.$store.state.user.role === 1) {
           this.$router.push({name: 'Branch', replace: true});
         } else if (this.$store.state.user.role === 2) {
           this.$router.push({name: 'UserFolder', replace: true});
         }
       }
-
     },
   }
 })

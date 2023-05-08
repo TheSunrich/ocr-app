@@ -73,10 +73,13 @@ library.add(
     faArrowRotateLeft,
     faArrowRight,
     faArrowLeft,
-    faUser
+    faUser,
+    faBuilding
 )
 
-axios.defaults.baseURL = "http://localhost:8000/"
+axios.defaults.baseURL = "http://192.168.100.60:8000/"
+//axios.defaults.baseURL = "http://localhost:8000/"
+//axios.defaults.baseURL = "http://172.16.100.23:8000/"
 
 Vue.use(VueAxios, axios)
 
@@ -93,6 +96,8 @@ const options = {
 Vue.use(Toast, options);
 
 Vue.config.productionTip = false
+
+console.log(process.env.NODE_ENV);
 
 new Vue({
     router,

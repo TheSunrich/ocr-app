@@ -19,10 +19,10 @@
               <b-button @click="scaleIncrement" :disabled="scale >= 15">
                 <font-awesome-icon icon="fa-solid fa-magnifying-glass-plus"/>
               </b-button>
-              <b-button @click="" :disabled="scale >= 15">
+              <b-button @click="setPrevious" :disabled="file.previous === null">
                 <font-awesome-icon icon="fa-solid fa-arrow-left"/>
               </b-button>
-              <b-button @click="" :disabled="scale >= 15">
+              <b-button @click="setNext" :disabled="file.next === null">
                 <font-awesome-icon icon="fa-solid fa-arrow-right"/>
               </b-button>
               <b-button variant="dark-green" @click="downloadFile">Descargar</b-button>
@@ -34,24 +34,32 @@
         </b-row>
       </b-col>
       <b-col md="6" lg="5" class="p-3" order="1" order-md="2">
-        <b-col class="pdf-data shadow text-start pt-4 pb-4 px-3">
+        <b-form @submit.stop.prevent="update" class="pdf-data shadow text-start pt-4 pb-4 px-3">
           <b-row class="px-3">
             <b-col cols="12">
               <h3>Nombre: </h3>
-              <b-form-input v-model="file.title" type="text" readonly/>
+              <b-input-group append=".pdf">
+                <b-form-input v-model.trim="file.title" type="text" required :readonly="$store.state.user.idClient === null"/>
+              </b-input-group>
               <br/>
             </b-col>
             <b-col cols="12">
               <h3>Código: </h3>
-              <b-form-input v-model="file.code" type="text" readonly/>
+              <b-form-input v-model.trim="file.code" type="text" required :readonly="$store.state.user.idClient === null"/>
               <br/>
             </b-col>
             <b-col cols="12">
               <h3>Fecha de Creación: </h3>
-              <b-form-input v-model="file.creation_date" type="text" readonly/>
+              <b-form-input v-model.trim="file.creation_date" type="text" readonly/>
+              <br/>
+            </b-col>
+            <b-col cols="12" v-if="$store.state.user.idClient === null">
+              <b-button variant="primary" block type="submit">
+                Actualizar información
+              </b-button>
             </b-col>
           </b-row>
-        </b-col>
+        </b-form>
       </b-col>
     </b-row>
   </b-container>
@@ -62,9 +70,9 @@ import {defineComponent} from "vue";
 import VuePdfEmbed from 'vue-pdf-embed/dist/vue2-pdf-embed';
 import {emitter} from "@/main";
 import Branch from "@/models/branch";
-import axios from "axios";
 
 export default defineComponent({
+  name: 'FileDetail',
   components: {
     VuePdfEmbed,
   },
@@ -73,23 +81,28 @@ export default defineComponent({
     code: {type: String, required: true},
     file_name: {type: String, required: true},
     preRoute: {type: String, required: true},
-    next: {type: String},
-    previous: {type: String},
   },
   data() {
     return {
+      oldFile: {
+        title: '',
+        code: '',
+        creation_date: '',
+        next: '',
+        previous: '',
+      },
       file: {
         title: '',
         code: '',
-        creation_date: ''
+        creation_date: '',
+        next: '',
+        previous: '',
       },
+      src: '',
       scale: 1
     }
   },
   computed: {
-    src(): String {
-      return this.axios.defaults.baseURL + `files/${this.branch.name}/${this.code}/${this.file_name}`
-    },
     scaleClass(): String {
       return `scale-${this.scale}`
     }
@@ -113,10 +126,10 @@ export default defineComponent({
         this.scale = 1
       }
     },
-    getData() {
+    setNext() {
       let title = 'Obtención de datos del archivo'
       let toastArgs = {};
-      this.axios.get(`file/${this.branch.name}/${this.code}/${this.file_name}`).then(response => {
+      this.axios.get(`file/${this.branch.name}/${this.file.code}/${this.file.next}`).then(response => {
         if (response.data.hasOwnProperty('error')) {
           return;
         } else if (response.data.hasOwnProperty('success')) {
@@ -128,6 +141,8 @@ export default defineComponent({
         }
         emitter.emit('show-toast', toastArgs);
         this.file = response.data.info.data;
+        this.oldFile = {...this.file};
+        this.src = this.axios.defaults.baseURL + `files/${this.branch.name}/${this.file.code}/${this.file.title}.pdf`
       }).catch(error => {
         if (error.response.data.hasOwnProperty('error')) {
           switch (error.response.data.error.code) {
@@ -151,18 +166,182 @@ export default defineComponent({
         }
       })
     },
-    async downloadFile() {
-      const response = await this.axios.get(`files/${this.branch.name}/${this.code}/${this.file_name}`);
-      const blob = new Blob([response.data], {type: "application/pdf"});
-      const link = document.createElement("a");
-      link.href = window.URL.createObjectURL(blob);
-      link.download = this.file_name;
-      link.click();
+    setPrevious() {
+      let title = 'Obtención de datos del archivo'
+      let toastArgs = {};
+      this.axios.get(`file/${this.branch.name}/${this.file.code}/${this.file.previous}`).then(response => {
+        if (response.data.hasOwnProperty('error')) {
+          return;
+        } else if (response.data.hasOwnProperty('success')) {
+          toastArgs = {
+            title: title,
+            description: 'Los datos del archivo han sido obtenidos correctamente',
+            type: 'success'
+          }
+        }
+        emitter.emit('show-toast', toastArgs);
+        this.file = response.data.info.data;
+        this.oldFile = {...this.file};
+        this.src = this.axios.defaults.baseURL + `files/${this.branch.name}/${this.file.code}/${this.file.title}.pdf`
+      }).catch(error => {
+        if (error.response.data.hasOwnProperty('error')) {
+          switch (error.response.data.error.code) {
+            case 404:
+              toastArgs = {
+                title: title,
+                description: 'No se ha encontrado el archivo',
+                type: 'warning'
+              }
+              break;
+            case 0:
+            default:
+              toastArgs = {
+                title: title,
+                description: 'Ha surgido un error inesperado',
+                type: 'error'
+              }
+              break;
+          }
+          emitter.emit('show-toast', toastArgs);
+        }
+      })
+    },
+    getData() {
+      let title = 'Obtención de datos del archivo'
+      let toastArgs = {};
+      this.axios.get(`file/${this.branch.name}/${this.code}/${this.file_name}`).then(response => {
+        if (response.data.hasOwnProperty('error')) {
+          return;
+        } else if (response.data.hasOwnProperty('success')) {
+          toastArgs = {
+            title: title,
+            description: 'Los datos del archivo han sido obtenidos correctamente',
+            type: 'success'
+          }
+        }
+        emitter.emit('show-toast', toastArgs);
+        this.file = response.data.info.data;
+        this.oldFile = {...this.file};
+        this.src = this.axios.defaults.baseURL + `files/${this.branch.name}/${this.file.code}/${this.file.title}.pdf`
+      }).catch(error => {
+        if (error.response.data.hasOwnProperty('error')) {
+          switch (error.response.data.error.code) {
+            case 404:
+              toastArgs = {
+                title: title,
+                description: 'No se ha encontrado el archivo',
+                type: 'warning'
+              }
+              break;
+            case 0:
+            default:
+              toastArgs = {
+                title: title,
+                description: 'Ha surgido un error inesperado',
+                type: 'error'
+              }
+              break;
+          }
+          emitter.emit('show-toast', toastArgs);
+        }
+      })
+    },
+    downloadFile() {
+      this.axios.get(`files/${this.branch.name}/${this.file.code}/${this.file.title}.pdf`, {
+        responseType: 'blob'
+      }).then(res => {
+        let FILE = window.URL.createObjectURL(new Blob([res.data]));
+
+        let docUrl = document.createElement('a');
+        docUrl.href = FILE;
+        docUrl.setAttribute('download', this.file.title + '.pdf');
+        document.body.appendChild(docUrl);
+        docUrl.click();
+      });
+    },
+    update() {
+      let title = 'Actualización de datos del archivo'
+      if (this.file.title.trim() === '') {
+        emitter.emit('show-toast', {
+          title: title,
+          description: 'El archivo debe tener un nombre',
+          type: 'error'
+        });
+        this.file.title = this.oldFile.title
+        return;
+      }
+      if (this.oldFile.title === this.file.title) {
+        emitter.emit('show-toast', {
+          title: title,
+          description: 'Los datos del archivo son iguales',
+          type: 'warning'
+        });
+        return;
+      }
+      let new_data: any = {
+        new_file_name: this.file.title
+      }
+      if (this.file.code !== this.oldFile.code) {
+        new_data.new_code = this.file.code
+      }
+      let toastArgs = {};
+      this.axios.patch(`file/${this.branch.name}/${this.code}/${this.oldFile.title}.pdf`, new_data).then(response => {
+        if (response.data.hasOwnProperty('error')) {
+          return;
+        } else if (response.data.hasOwnProperty('success')) {
+          toastArgs = {
+            title: title,
+            description: 'Los datos del archivo han sido modificados correctamente',
+            type: 'success'
+          }
+        }
+        emitter.emit('show-toast', toastArgs);
+        this.oldFile.title = new_data.new_file_name
+        if (new_data.hasOwnProperty('new_code')) {
+          this.oldFile.code = new_data.new_code
+        }
+        this.src = this.axios.defaults.baseURL + `files/${this.branch.name}/${this.file.code}/${this.file.title}.pdf`
+      }).catch(error => {
+        if (error.response.data.hasOwnProperty('error')) {
+          switch (error.response.data.error.code) {
+            case 404:
+              toastArgs = {
+                title: title,
+                description: 'No se ha encontrado el archivo',
+                type: 'warning'
+              }
+              break;
+            case 410:
+              toastArgs = {
+                title: title,
+                description: 'El archivo no se ha podido modificar',
+                type: 'warning'
+              }
+              break;
+            case 419:
+              toastArgs = {
+                title: title,
+                description: 'No se ha encontrado el folder del archivo',
+                type: 'warning'
+              }
+              break;
+            case 0:
+            default:
+              toastArgs = {
+                title: title,
+                description: 'Ha surgido un error inesperado',
+                type: 'error'
+              }
+              break;
+          }
+          emitter.emit('show-toast', toastArgs);
+        }
+      })
     },
     returnToFileList() {
       this.$router.replace({
         name: 'FolderFiles',
-        params: {branch: JSON.stringify(this.branch), folder: this.code, preRoute: this.preRoute}
+        params: {branch: JSON.stringify(this.branch), folder: this.file.code, preRoute: this.preRoute}
       });
     }
   }
@@ -188,6 +367,7 @@ export default defineComponent({
     padding: 15px;
     border-radius: 15px;
     background-color: white;
+    min-height: 396px;
   }
 }
 

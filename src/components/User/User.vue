@@ -39,20 +39,22 @@
           <b-form-select name="branch" id="branch" v-model="user.idBranch" :options="branches" disabled
                          value-field="id" text-field="name">
           </b-form-select>
-
+        </b-form-group>
+        <b-form-group class="mb-3" label="Rol:">
+          <b-form-select name="role" v-model="editUser.role" :options="options" :state="roleState" required/>
         </b-form-group>
         <b-form-group class="mb-3" label="Nueva Contraseña: " :state="pwdState">
           <b-input-group>
             <b-form-input id="pwd" name="pwd" type='password' v-model.trim="editUser.pwd"
-                          required :state="pwdState"></b-form-input>
+                          :state="pwdState" required></b-form-input>
           </b-input-group>
           <b-form-invalid-feedback>
             El campo 'Nueva Contraseña' es requerido
           </b-form-invalid-feedback>
         </b-form-group>
         <b-form-group class="mb-3" label="Confirmar Contraseña: ">
-            <b-form-input id="pwd_2" name="pwd_2" type="password" v-model.trim="pwd_check"
-                          required :state="pwdState2"></b-form-input>
+          <b-form-input id="pwd_2" name="pwd_2" type="password" v-model.trim="pwd_check"
+                        :state="pwdState2" required></b-form-input>
           <b-form-invalid-feedback>
             El campo 'Confirmar Contraseña' es requerido
           </b-form-invalid-feedback>
@@ -80,10 +82,14 @@ export default defineComponent({
       roleState: null,
       usernameState: null,
       pwd_check: '',
+      options: [
+        {value: null, text: 'Seleccione un rol'},
+        {value: 1, text: 'Administrador'},
+        {value: 2, text: 'Supervisor'},
+      ],
       editUser: {
         pwd: '',
         role: this.user.role as number | null,
-        name: this.user.name,
         username: this.user.username,
       },
       branches: []
@@ -100,6 +106,7 @@ export default defineComponent({
     checkFormValidity() {
       const form: any = this.$refs['modifyForm-' + this.user.id];
       this.usernameState = form.username.checkValidity()
+      this.roleState = form.role.checkValidity()
       this.pwdState = form.pwd.checkValidity()
       this.pwdState2 = this.editUser.pwd !== '' && this.editUser.pwd === this.pwd_check && form.pwd_2.checkValidity()
       return form.checkValidity() && this.editUser.pwd !== '' && this.editUser.pwd === this.pwd_check;
@@ -166,7 +173,6 @@ export default defineComponent({
       this.editUser = {
         pwd: '',
         role: this.user.role,
-        name: this.user.name,
         username: this.user.username,
       }
     },
@@ -211,7 +217,6 @@ export default defineComponent({
           }
           this.editUser.pwd = this.user.pwd;
           this.editUser.role = this.user.role;
-          this.editUser.name = this.user.name;
           emitter.emit('show-toast', toastArgs);
           return;
         } else if (response.data.hasOwnProperty('success')) {
@@ -226,7 +231,6 @@ export default defineComponent({
       }).catch(error => {
         this.editUser.pwd = this.user.pwd;
         this.editUser.role = this.user.role;
-        this.editUser.name = this.user.name;
         if (error.response.data.hasOwnProperty('error')) {
           switch (error.response.data.error.code) {
             case 419:

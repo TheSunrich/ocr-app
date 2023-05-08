@@ -9,6 +9,8 @@ import Login from "@/views/Login.vue";
 import Shared from "@/views/Shared.vue";
 import SharedFolder from "@/views/SharedFolder.vue";
 import SharedFileDetail from "@/views/SharedFileDetail.vue";
+import Companies from "@/views/Companies.vue";
+import Company from "@/views/Company.vue";
 
 Vue.use(VueRouter)
 
@@ -60,17 +62,27 @@ const routes: Array<RouteConfig> = [
         component: Folder,
         props: (route) => ({
             branch: route.params.branch === undefined ? undefined : JSON.parse(route.params.branch),
+            dateInit: route.params.dateInit === undefined ? '' : String(route.params.dateInit),
+            dateEnd: route.params.dateEnd === undefined ? '' : String(route.params.dateEnd)
         })
     },
     {
         path: '/folder',
         name: 'UserFolder',
         component: Folder,
+        props: (route) => ({
+            dateInit: route.params.dateInit === undefined ? '' : String(route.params.dateInit),
+            dateEnd: route.params.dateEnd === undefined ? '' : String(route.params.dateEnd)
+        })
     },
     {
         path: '/folder',
         name: 'Folder',
         component: Folder,
+        props: (route) => ({
+            dateInit: route.params.dateInit === undefined ? '' : String(route.params.dateInit),
+            dateEnd: route.params.dateEnd === undefined ? '' : String(route.params.dateEnd)
+        })
 
     },
     {
@@ -81,7 +93,9 @@ const routes: Array<RouteConfig> = [
             branch: route.params.branch === undefined ? undefined : JSON.parse(route.params.branch),
             folder: route.params.folder === undefined ? undefined : String(route.params.folder),
             deleted: false,
-            preRoute: route.params.preRoute === undefined ? undefined : String(route.params.preRoute)
+            preRoute: route.params.preRoute === undefined ? undefined : String(route.params.preRoute),
+            dateInit: route.params.dateInit === undefined ? undefined : String(route.params.dateInit),
+            dateEnd: route.params.dateEnd === undefined ? undefined : String(route.params.dateEnd)
         })
     },
     {
@@ -95,10 +109,22 @@ const routes: Array<RouteConfig> = [
             preRoute: route.params.preRoute === undefined ? undefined : String(route.params.preRoute)
         })
     },
+    {
+        path: '/companies',
+        name: 'Companies',
+        component: Companies,
+
+    },
+    {
+        path: '/company',
+        name: 'Company',
+        component: Company,
+
+    },
 ]
 
 const router = new VueRouter({
-    mode: 'history',
+    mode: 'hash',
     base: process.env.BASE_URL,
     routes
 })
