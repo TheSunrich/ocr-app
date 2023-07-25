@@ -16,9 +16,11 @@
     </b-row>
     <TransitionGroup name="list" tag="div" class="row" mode="out-in">
       <FolderComponent :folder="folderFile" :deleted="true" v-if="!isDeleted && $store.state.user.idClient === null"
-                       :key="folder"/>
+                       :key="folder" :date-init="dateInit"
+                       :date-end="dateEnd"/>
       <FileComponent v-for="file in searchFiles" :key="file" :file="file" :branch="branch" :folder="folder"
-                     :pre-route="preRoute" :isDeleted="isDeleted"/>
+                     :pre-route="preRoute" :isDeleted="isDeleted" :date-init="dateInit"
+                     :date-end="dateEnd"/>
     </TransitionGroup>
   </b-container>
 </template>

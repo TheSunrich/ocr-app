@@ -94,8 +94,8 @@ const routes: Array<RouteConfig> = [
             folder: route.params.folder === undefined ? undefined : String(route.params.folder),
             deleted: false,
             preRoute: route.params.preRoute === undefined ? undefined : String(route.params.preRoute),
-            dateInit: route.params.dateInit === undefined ? undefined : String(route.params.dateInit),
-            dateEnd: route.params.dateEnd === undefined ? undefined : String(route.params.dateEnd)
+            dateInit: route.params.dateInit === undefined ? '' : String(route.params.dateInit),
+            dateEnd: route.params.dateEnd === undefined ? '' : String(route.params.dateEnd)
         })
     },
     {
@@ -106,7 +106,9 @@ const routes: Array<RouteConfig> = [
             branch: route.params.branch === undefined ? undefined : JSON.parse(route.params.branch),
             code: route.params.code === undefined ? undefined : String(route.params.code),
             file_name: route.params.file_name === undefined ? undefined : String(route.params.file_name),
-            preRoute: route.params.preRoute === undefined ? undefined : String(route.params.preRoute)
+            preRoute: route.params.preRoute === undefined ? undefined : String(route.params.preRoute),
+            dateInit: route.params.dateInit === undefined ? '' : String(route.params.dateInit),
+            dateEnd: route.params.dateEnd === undefined ? '' : String(route.params.dateEnd)
         })
     },
     {

@@ -1,14 +1,18 @@
 <template>
   <b-col sm="6" md="4" lg="3" xl="2" class="py-3">
-    <b-card :key="cardKey" no-body  class="btn-branch shadow-sm" v-bind:img-src="`${axios.defaults.baseURL}file/${this.branch.name}/${this.folder}/${this.file}?is_thumbnail=true`" img-top>
+    <b-card :key="cardKey" no-body class="btn-branch shadow-sm"
+            v-bind:img-src="isDeleted ? `${axios.defaults.baseURL}file/${this.branch.name}/${this.folder}/${this.file}?is_deleted=true&is_thumbnail=true` : `${axios.defaults.baseURL}file/${this.branch.name}/${this.folder}/${this.file}?is_thumbnail=true`"
+            img-top >
       <b-spinner class="charge" style="margin: 25% 41%; width: 2rem; height: 2rem;" label="Spinning"></b-spinner>
       <a class="btn-action btn-update" v-b-modal="'modifyFile-' + file" v-if="$store.state.user.idClient === null">
         <font-awesome-icon icon="fa-solid fa-pencil" size="sm"/>
       </a>
-      <a class="btn-action btn-delete" @click="showModal('delete')" v-if="!isDeleted && $store.state.user.idClient === null">
+      <a class="btn-action btn-delete" @click="showModal('delete')"
+         v-if="!isDeleted && $store.state.user.idClient === null">
         <font-awesome-icon icon="fa-solid fa-trash" size="sm"/>
       </a>
-      <a class="btn-action btn-restore" @click="showModal('restore')" v-if="isDeleted && $store.state.user.idClient === null">
+      <a class="btn-action btn-restore" @click="showModal('restore')"
+         v-if="isDeleted && $store.state.user.idClient === null">
         <font-awesome-icon icon="fa-solid fa-arrow-rotate-left" size="sm"/>
       </a>
       <blockquote class="card-blockquote" @click="showFileDetail">
@@ -50,12 +54,14 @@ export default defineComponent({
     branch: {type: Branch, required: true},
     file: {type: String, required: true},
     preRoute: {type: String, required: true},
-    isDeleted: {type: Boolean, required: true}
+    isDeleted: {type: Boolean, required: true},
+    dateInit: {type: String, default: ''},
+    dateEnd: {type: String, default: ''},
   },
   data() {
     return {
       nameState: null,
-      editFile:{
+      editFile: {
         name: ''
       },
       cardKey: Date.now()
@@ -116,7 +122,13 @@ export default defineComponent({
     showFileDetail() {
       this.$router.push({
         name: 'File',
-        params: {branch: JSON.stringify(this.branch), code: this.folder, file_name: this.file, preRoute: this.preRoute}
+        params: {
+          branch: JSON.stringify(this.branch),
+          code: this.folder, file_name: this.file,
+          preRoute: this.preRoute,
+          dateInit: this.dateInit,
+          dateEnd: this.dateEnd
+        }
       })
     },
     updateFile() {
@@ -124,7 +136,7 @@ export default defineComponent({
       let toastArgs = {}
       this.axios.patch(`file/${this.branch.name}/${this.folder}/${this.file}`, {new_file_name: this.editFile.name}).then(response => {
         if (response.data.hasOwnProperty('error')) {
-          emitter.emit('show-toast',{
+          emitter.emit('show-toast', {
             title: title,
             description: 'El archivo no se ha modificado',
             type: 'error'
@@ -138,9 +150,9 @@ export default defineComponent({
           }
         }
         emitter.emit('show-toast', toastArgs);
-        emitter.emit('file-getList',{deleted: this.isDeleted})
-      }).catch( error => {
-        emitter.emit('show-toast',{
+        emitter.emit('file-getList', {deleted: this.isDeleted})
+      }).catch(error => {
+        emitter.emit('show-toast', {
           title: title,
           description: 'El archivo no se ha modificado',
           type: 'error'
@@ -152,7 +164,7 @@ export default defineComponent({
       let title = "Eliminación de archivo"
       this.axios.put(`file/${this.branch.name}/${this.folder}/${this.file}/delete`).then(response => {
         if (response.data.hasOwnProperty('error')) {
-          emitter.emit('show-toast',{
+          emitter.emit('show-toast', {
             title: title,
             description: 'El archivo no se ha eliminado',
             type: 'error'
@@ -166,14 +178,14 @@ export default defineComponent({
           }
         }
         emitter.emit('show-toast', toastArgs);
-        emitter.emit('file-getList',{deleted: this.isDeleted})
-      }).catch(error =>{
+        emitter.emit('file-getList', {deleted: this.isDeleted})
+      }).catch(error => {
         console.log(error)
-        emitter.emit('show-toast',{
-            title: title,
-            description: 'El archivo no se ha eliminado',
-            type: 'error'
-          })
+        emitter.emit('show-toast', {
+          title: title,
+          description: 'El archivo no se ha eliminado',
+          type: 'error'
+        })
       })
     },
     restoreFile() {
@@ -181,7 +193,7 @@ export default defineComponent({
       let title = "Restauración de archivo"
       this.axios.put(`file/${this.branch.name}/${this.folder}/${this.file}/restore`).then(response => {
         if (response.data.hasOwnProperty('error')) {
-          emitter.emit('show-toast',{
+          emitter.emit('show-toast', {
             title: title,
             description: 'El archivo no se ha restaurado',
             type: 'error'
@@ -195,10 +207,10 @@ export default defineComponent({
           }
         }
         emitter.emit('show-toast', toastArgs);
-        emitter.emit('file-getList',{deleted: this.isDeleted})
-      }).catch(error =>{
+        emitter.emit('file-getList', {deleted: this.isDeleted})
+      }).catch(error => {
         console.log(error)
-        emitter.emit('show-toast',{
+        emitter.emit('show-toast', {
           title: title,
           description: 'El archivo no se ha restaurado',
           type: 'error'
@@ -211,11 +223,11 @@ export default defineComponent({
 
 <style scoped lang="scss">
 
-.card-img-top{
+.card-img-top {
   z-index: 1;
 }
 
-.charge{
+.charge {
   z-index: 0;
   display: flex;
   position: absolute;
@@ -262,7 +274,7 @@ export default defineComponent({
     object-position: top;
   }
 
-  .card-blockquote{
+  .card-blockquote {
     padding-top: 20px;
   }
 
@@ -368,6 +380,5 @@ export default defineComponent({
     }
   }
 }
-
 
 </style>

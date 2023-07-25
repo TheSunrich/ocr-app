@@ -19,6 +19,7 @@
         <font-awesome-icon class="btn-icon m-4" icon="fa-solid fa-folder" size="4x"/>
         <h2>{{ folder.name }}</h2>
         <h3 v-if="!deleted">{{ folder.branch.name }} </h3>
+        <h5 v-if="!deleted">{{ formatDate(folder.datetime) }} </h5>
       </blockquote>
     </b-card>
     <b-modal
@@ -75,6 +76,14 @@ export default defineComponent({
     }
   },
   methods: {
+    formatDate(date: String){
+      let parts = date.split('-');
+      let mydate = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
+      let dd = mydate.getDate() < 10 ? `0${mydate.getDate()}` : `${mydate.getDate()}`;
+      let mm = mydate.getMonth()+1 < 10 ? `0${mydate.getMonth()+1}` : `${mydate.getMonth()+1}` ;
+      let yyyy = mydate.getFullYear();
+      return `${dd}/${mm}/${yyyy}`
+    },
     checkFormValidity() {
       const form: any = this.$refs['modifyFolder-' + this.folder.idBranch + this.folder.name];
       this.nameState = form.name.checkValidity()
@@ -594,7 +603,6 @@ $custom-red: #ce2b2b;
     h2 {
       user-select: none;
       margin: 0;
-      padding: 0 10px;
       text-align: center;
       font-size: 20px;
     }
@@ -602,9 +610,16 @@ $custom-red: #ce2b2b;
     h3 {
       user-select: none;
       margin: 0;
-      padding: 0 10px;
       text-align: center;
       font-size: 14px;
+    }
+
+    h5 {
+      user-select: none;
+      margin: 0;
+      padding-top: 5px;
+      text-align: center;
+      font-size: 10px;
     }
   }
 }

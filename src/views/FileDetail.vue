@@ -29,7 +29,9 @@
             </b-button-group>
           </b-col>
           <b-col cols="12">
-            <VuePdfEmbed :source="src" :page="1" :class="scaleClass"/>
+            <div class="img_viewer">
+              <b-img :src="src" :class="`img_detail ${scaleClass}`"/>
+            </div>
           </b-col>
         </b-row>
       </b-col>
@@ -39,13 +41,15 @@
             <b-col cols="12">
               <h3>Nombre: </h3>
               <b-input-group append=".pdf">
-                <b-form-input v-model.trim="file.title" type="text" required :readonly="$store.state.user.idClient === null"/>
+                <b-form-input v-model.trim="file.title" type="text" required
+                              :readonly="$store.state.user.idClient === null"/>
               </b-input-group>
               <br/>
             </b-col>
             <b-col cols="12">
               <h3>Código: </h3>
-              <b-form-input v-model.trim="file.code" type="text" required :readonly="$store.state.user.idClient === null"/>
+              <b-form-input v-model.trim="file.code" type="text" required
+                            :readonly="$store.state.user.idClient === null"/>
               <br/>
             </b-col>
             <b-col cols="12">
@@ -81,6 +85,8 @@ export default defineComponent({
     code: {type: String, required: true},
     file_name: {type: String, required: true},
     preRoute: {type: String, required: true},
+    dateInit: {type: String, default: ''},
+    dateEnd: {type: String, default: ''},
   },
   data() {
     return {
@@ -111,6 +117,9 @@ export default defineComponent({
     emitter.emit('check-routes');
   },
   mounted() {
+    if (this.branch === undefined || this.code === undefined || this.file_name === undefined) {
+      this.$router.push({name: 'Folder', replace: true})
+    }
     this.getData();
   },
   methods: {
@@ -142,7 +151,7 @@ export default defineComponent({
         emitter.emit('show-toast', toastArgs);
         this.file = response.data.info.data;
         this.oldFile = {...this.file};
-        this.src = this.axios.defaults.baseURL + `files/${this.branch.name}/${this.file.code}/${this.file.title}.pdf`
+        this.src = this.axios.defaults.baseURL + `files/${this.branch.name}/${this.file.code}/${this.file.title}.png`
       }).catch(error => {
         if (error.response.data.hasOwnProperty('error')) {
           switch (error.response.data.error.code) {
@@ -182,7 +191,7 @@ export default defineComponent({
         emitter.emit('show-toast', toastArgs);
         this.file = response.data.info.data;
         this.oldFile = {...this.file};
-        this.src = this.axios.defaults.baseURL + `files/${this.branch.name}/${this.file.code}/${this.file.title}.pdf`
+        this.src = this.axios.defaults.baseURL + `files/${this.branch.name}/${this.file.code}/${this.file.title}.png`
       }).catch(error => {
         if (error.response.data.hasOwnProperty('error')) {
           switch (error.response.data.error.code) {
@@ -222,7 +231,7 @@ export default defineComponent({
         emitter.emit('show-toast', toastArgs);
         this.file = response.data.info.data;
         this.oldFile = {...this.file};
-        this.src = this.axios.defaults.baseURL + `files/${this.branch.name}/${this.file.code}/${this.file.title}.pdf`
+        this.src = this.axios.defaults.baseURL + `files/${this.branch.name}/${this.file.code}/${this.file.title}.png`
       }).catch(error => {
         if (error.response.data.hasOwnProperty('error')) {
           switch (error.response.data.error.code) {
@@ -247,7 +256,7 @@ export default defineComponent({
       })
     },
     downloadFile() {
-      this.axios.get(`files/${this.branch.name}/${this.file.code}/${this.file.title}.pdf`, {
+      this.axios.get(`file/${this.branch.name}/${this.file.code}/${this.file.title}.png?is_pdf=true`, {
         responseType: 'blob'
       }).then(res => {
         let FILE = window.URL.createObjectURL(new Blob([res.data]));
@@ -285,7 +294,7 @@ export default defineComponent({
         new_data.new_code = this.file.code
       }
       let toastArgs = {};
-      this.axios.patch(`file/${this.branch.name}/${this.code}/${this.oldFile.title}.pdf`, new_data).then(response => {
+      this.axios.patch(`file/${this.branch.name}/${this.code}/${this.oldFile.title}.png`, new_data).then(response => {
         if (response.data.hasOwnProperty('error')) {
           return;
         } else if (response.data.hasOwnProperty('success')) {
@@ -300,7 +309,7 @@ export default defineComponent({
         if (new_data.hasOwnProperty('new_code')) {
           this.oldFile.code = new_data.new_code
         }
-        this.src = this.axios.defaults.baseURL + `files/${this.branch.name}/${this.file.code}/${this.file.title}.pdf`
+        this.src = this.axios.defaults.baseURL + `files/${this.branch.name}/${this.file.code}/${this.file.title}.png`
       }).catch(error => {
         if (error.response.data.hasOwnProperty('error')) {
           switch (error.response.data.error.code) {
@@ -341,7 +350,13 @@ export default defineComponent({
     returnToFileList() {
       this.$router.replace({
         name: 'FolderFiles',
-        params: {branch: JSON.stringify(this.branch), folder: this.file.code, preRoute: this.preRoute}
+        params: {
+          branch: JSON.stringify(this.branch),
+          folder: this.file.code,
+          preRoute: this.preRoute,
+          dateInit: this.dateInit,
+          dateEnd: this.dateEnd
+        }
       });
     }
   }
@@ -352,7 +367,7 @@ export default defineComponent({
 @use "sass:math";
 
 @function calc_translate($i) {
-  @return math.percentage((12.5 * $i - 12.5)/100);
+  @return math.percentage(((12.5 * $i - 12.5)/100)+1);
 }
 
 @function calc_scale($i) {
@@ -368,6 +383,15 @@ export default defineComponent({
     border-radius: 15px;
     background-color: white;
     min-height: 396px;
+    max-height: 960px;
+
+    .img_viewer {
+      height: 100%;
+      width: 100%;
+      max-height: 882px;
+      max-width: 682px;
+      overflow: auto;
+    }
   }
 }
 
@@ -399,24 +423,18 @@ export default defineComponent({
   }
 }
 
-.vue-pdf-embed {
-  div {
-    overflow: auto;
-
-    canvas {
-      height: 100% !important;
-      width: 100% !important;
-      transition: transform ease-in-out 0.5s;
-    }
-  }
+div {
+  .img_detail {
+    height: 100% !important;
+    width: 100% !important;
+    transition: transform ease-in-out 0.5s, height ease-in-out 0.5s, width ease-in-out 0.5s;
 
 
-  @for $i from 1 through 15 {
-    &.scale-#{$i} {
-      div {
-        canvas {
-          transform: translate(calc_translate($i), calc_translate($i)) scale(calc_scale($i));
-        }
+    @for $i from 1 through 15 {
+      &.scale-#{$i} {
+        //transform: translate(calc_translate($i), calc_translate($i)) scale(calc_scale($i));
+        height: calc_translate($i) !important;
+        width: calc_translate($i) !important;
       }
     }
   }

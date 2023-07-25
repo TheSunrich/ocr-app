@@ -77,9 +77,9 @@ library.add(
     faBuilding
 )
 
-axios.defaults.baseURL = "http://192.168.100.60:8000/"
+//axios.defaults.baseURL = "http://192.168.100.60:8000/"
 //axios.defaults.baseURL = "http://localhost:8000/"
-//axios.defaults.baseURL = "http://172.16.100.23:8000/"
+axios.defaults.baseURL = "http://172.16.100.23:8000/"
 
 Vue.use(VueAxios, axios)
 

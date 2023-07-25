@@ -12,7 +12,7 @@
     </b-row>
     <b-row class="mb-4 mt-2">
       <b-col cols="6">
-        <b-form-input v-model="txtSearch" placeholder="Búsqueda" type="search"></b-form-input>
+        <b-form-input v-model="txtSearch" placeholder="Búsqueda" type="search" @input="search"></b-form-input>
       </b-col>
       <b-col cols="2">
         <b-form-datepicker v-model="txtDateInit" :max="txtDateEnd || new Date()"
@@ -40,7 +40,7 @@
                  v-if="searchFolders.length <= 0 && !afterResult"></b-spinner>
     </Transition>
     <TransitionGroup name="list" tag="div" class="row" mode="out-in">
-      <FolderComponent v-for="folder in searchFolders" :key="folder.name" :date-init="txtDateInit"
+      <FolderComponent v-for="folder in searchFolders" :key="`${folder.name}-${folder.idBranch}`" :date-init="txtDateInit"
                        :date-end="txtDateEnd"
                        :folder="folder"/>
     </TransitionGroup>
@@ -107,6 +107,7 @@ export default defineComponent({
         emitter.on('folder-getList', this.getAll);
       }
     }
+
   },
   computed: {
     checked: {
@@ -141,6 +142,7 @@ export default defineComponent({
       return formatedDate;
     },
     search() {
+      console.log('clicked');
       let filteredFolders: Folder[] = [];
       if (this.txtSearch === '' && this.txtDateInit === '' && this.txtDateEnd === '') {
         this.searchFolders = this.folders;
@@ -181,6 +183,7 @@ export default defineComponent({
         }
         this.folders = response.data;
         this.searchFolders = response.data;
+        this.search();
       }).catch(error => {
         console.log(error);
       }).finally(() => {
@@ -210,6 +213,7 @@ export default defineComponent({
         }
         this.folders = response.data;
         this.searchFolders = response.data;
+        this.search();
       }).catch(error => {
         console.log(error);
       }).finally(() => {
@@ -238,6 +242,7 @@ export default defineComponent({
         }
         this.folders = response.data;
         this.searchFolders = response.data;
+        this.search();
       }).catch(error => {
         console.log(error);
       }).finally(() => {
